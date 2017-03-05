@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#212121</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#9e9e9e</color>
+    <color name="discoveryBackground">#212121</color>
+    <color name="detailBackground">#616161</color>
+    <color name="errorBoxColor">#ffbd24</color>
+</resources>

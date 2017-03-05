@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center_vertical"
+    android:id="@+id/ll_plot_synopsis"
+    >
+
+    <TextView
+        android:text="@string/plot_synopsis"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_plot_synopsis_header"
+        android:textAppearance="@style/MovieDetailInformationTitles" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/tv_plot_synopsis"
+            android:layout_marginLeft="@dimen/movie_detail_info_indent"
+            android:layout_marginStart="@dimen/movie_detail_info_indent" />
+    </ScrollView>
+
+</LinearLayout>

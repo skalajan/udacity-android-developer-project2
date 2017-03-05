@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_error_message_box"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="bottom"
+    android:background="@color/errorBoxColor"
+    android:visibility="gone">
+
+    <TextView
+        android:text="@string/network_request_failed_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_network_request"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:paddingTop="10dp" />
+
+    <TextView
+        android:text="@string/check_connectivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_network_request"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/tv_check_connectivity" />
+
+    <Button
+        android:id="@+id/btn_try_again"
+        android:text="@string/try_again"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_check_connectivity"
+        android:layout_centerHorizontal="true" />
+
+</RelativeLayout>
+
