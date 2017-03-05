@@ -284,15 +284,15 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
     abstract class LoadNextPageScrollListener extends RecyclerView.OnScrollListener {
         // The minimum amount of items to have below your current scroll position
         // before loading more.
-        private int visibleThreshold = 20;
+        private int visibleThreshold = 5;
         // The current offset index of data you have loaded
-        private int currentPage = 0;
+        private int currentPage = 1;
         // The total number of items in the dataset after the last load
         private int previousTotalItemCount = 0;
         // True if we are still waiting for the last set of data to load.
         private boolean loading = true;
         // Sets the starting page index
-        private int startingPageIndex = 0;
+        private int startingPageIndex = 1;
 
         GridLayoutManager mLayoutManager;
 
@@ -357,7 +357,7 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
 
     @Override
     public void onLoadFinished(Loader<DiscoveryDataCache> loader, DiscoveryDataCache data) {
-        adapter.notifyDataSetChanged();
+        adapter.onDataChanged();
     }
 
     @Override

@@ -23,7 +23,6 @@ public class DiscoveryDataLoader extends AsyncTaskLoader<DiscoveryDataCache> imp
     public static final int LOADER_ID = 111;
     public static final String SORT_SUFFIX_BUNDLE_KEY = "SORT_SUFFIX_BUNDLE_KEY";
 
-
     private ArrayList<DiscoveryDataResponse> discoveryResponses;
     private ArrayList<Integer> indexesFrom;
     private ArrayList<Integer> indexesTo;
@@ -35,10 +34,10 @@ public class DiscoveryDataLoader extends AsyncTaskLoader<DiscoveryDataCache> imp
     private String sortSuffix;
 
 
-    public DiscoveryDataLoader(Context context){
+    public DiscoveryDataLoader(Context context, Bundle args){
         super(context);
 
-        sortSuffix = bundle.getString(SORT_SUFFIX_BUNDLE_KEY);
+        sortSuffix = args.getString(SORT_SUFFIX_BUNDLE_KEY);
 
         discoveryResponses = new ArrayList<>();
 
@@ -78,7 +77,7 @@ public class DiscoveryDataLoader extends AsyncTaskLoader<DiscoveryDataCache> imp
 
     public int getCurrentPage(){
         if(discoveryResponses == null || discoveryResponses.size() == 0)
-            return 0;
+            return 1;
         else return discoveryResponses.size() + 1;
     }
 
@@ -111,7 +110,7 @@ public class DiscoveryDataLoader extends AsyncTaskLoader<DiscoveryDataCache> imp
             int nextPage = discoveryResponses.size() + 1;
             try {
                 if (discoveryResponses.size() == 0 || (discoveryResponses.size() > 0 && discoveryResponses.get(0).getTotalPages() >= nextPage)) {
-                    startLoading();
+                    forceLoad();
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -158,7 +157,8 @@ public class DiscoveryDataLoader extends AsyncTaskLoader<DiscoveryDataCache> imp
             }else{
                 discoveryResponses.set(discoveryData.getPage(), discoveryData);
             }
-            notifyDataChanged();
+//          notifyDataChanged();
+            recountItems();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -198,8 +198,18 @@ public class DiscoveryDataLoader extends AsyncTaskLoader<DiscoveryDataCache> imp
             dataReceived(result);
         }
 
+        loadingNewData = false;
+
 
         return this;
+    }
+
+    @Override
+    protected void onStartLoading() {
+        super.onStartLoading();
+        if(discoveryResponses == null || discoveryResponses.size() == 0)
+            forceLoad();
+        else deliverResult(this);
     }
 
     protected void onTimeout(){
