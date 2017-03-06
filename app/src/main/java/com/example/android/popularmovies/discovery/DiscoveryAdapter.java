@@ -76,37 +76,40 @@ class DiscoveryAdapter extends RecyclerView.Adapter<DiscoveryViewHolder> impleme
         final DiscoveryViewHolder h = holder;
         Log.d(MainDiscoveryScreen.TAG, "onBindHolder: " + position);
         if (discoveryData.getCount() > position) {
-            h.loadingNextPageSpinner.setVisibility(View.VISIBLE);
-            h.errorLoadingImageView.setVisibility(View.INVISIBLE);
+            try {
+                h.loadingNextPageSpinner.setVisibility(View.VISIBLE);
+                h.errorLoadingImageView.setVisibility(View.INVISIBLE);
 
-            JSONObject item = discoveryData.getItem(position);
-            if (item != null) {
-                String posterUrl = item.optString("poster_path");
-                if (posterUrl != null && !"null".equals(posterUrl)) {
-                    Uri imageUri = NetworkUtils.buildImageUri(posterUrl);
-                    Log.d(TAG, "Loading image " + imageUri.toString());
-                    Picasso.with(context)
-                            .load(imageUri)
-                            .into(holder.movieImageView, new Callback() {
-                                @Override
-                                public void onSuccess() {
-                                    h.loadingNextPageSpinner.setVisibility(View.INVISIBLE);
-                                }
+                JSONObject item = discoveryData.getItem(position);
+                if (item != null) {
+                    String posterUrl = item.optString("poster_path");
+                    if (posterUrl != null && !"null".equals(posterUrl)) {
+                        Uri imageUri = NetworkUtils.buildImageUri(posterUrl);
+                        Log.d(TAG, "Loading image " + imageUri.toString());
+                        Picasso.with(context)
+                                .load(imageUri)
+                                .into(holder.movieImageView, new Callback() {
+                                    @Override
+                                    public void onSuccess() {
+                                        h.loadingNextPageSpinner.setVisibility(View.INVISIBLE);
+                                    }
 
-                                @Override
-                                public void onError() {
-                                    h.loadingNextPageSpinner.setVisibility(View.INVISIBLE);
-                                    h.errorLoadingImageView.setVisibility(View.VISIBLE);
-                                }
-                            });
+                                    @Override
+                                    public void onError() {
+                                        h.loadingNextPageSpinner.setVisibility(View.INVISIBLE);
+                                        h.errorLoadingImageView.setVisibility(View.VISIBLE);
+                                    }
+                                });
+                    } else {
+                        Picasso.with(context).cancelRequest(holder.movieImageView);
+                        Log.v(TAG, "Null image url");
+                    }
                 } else {
-                    Picasso.with(context).cancelRequest(holder.movieImageView);
-                    Log.v(TAG, "Null image url");
+                    holder.loadingNextPageSpinner.setVisibility(View.VISIBLE);
                 }
-            } else {
-                holder.loadingNextPageSpinner.setVisibility(View.VISIBLE);
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-
         }
     }
 

@@ -2,8 +2,6 @@ package com.example.android.popularmovies.discovery;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,13 +15,12 @@ import android.widget.Toast;
 import com.example.android.popularmovies.Constants;
 import com.example.android.popularmovies.model.DiscoveryDataCache;
 import com.example.android.popularmovies.R;
-import com.example.android.popularmovies.model.DiscoveryDataLoader;
 import com.example.android.popularmovies.movie_detail.MovieDetailActivity;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 
 import org.json.JSONException;
 
-public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnPosterClickedListener, OnFirstLoadingFinishedListener, LoaderManager.LoaderCallbacks<DiscoveryDataCache> {
+public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnPosterClickedListener, OnFirstLoadingFinishedListener {
     public static final String TAG = MainDiscoveryScreen.class.getName();
 
     /**
@@ -52,7 +49,7 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
     protected LoadNextPageScrollListener onScrollListener;
     protected GridLayoutManager layoutManager;
 
-    protected DiscoveryDataLoader discoveryDataLoader;
+    protected DiscoveryDataCache discoveryData;
 
     /**
      * Sorting orders
@@ -78,8 +75,8 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
         if(sortBy != null) {
             outState.putString(SORT_BY_SAVE_STATE_KEY, sortBy.name());
         }
-        if(discoveryDataLoader != null){
-            //outState.putBundle(DISCOVERY_DATA_CACHE_SAVE_STATE_KEY, discoveryDataLoader.saveToBundle());
+        if(discoveryData != null){
+            outState.putBundle(DISCOVERY_DATA_CACHE_SAVE_STATE_KEY, discoveryData.saveToBundle());
         }
         if(discoveryRecyclerView != null && discoveryRecyclerView.getLayoutManager() != null) {
             int scrollPosition = ((GridLayoutManager) discoveryRecyclerView.getLayoutManager()).findFirstVisibleItemPosition();
@@ -123,30 +120,26 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
         if(savedInstanceState != null){
             sortBy = SortBy.valueOf(savedInstanceState.getString(SORT_BY_SAVE_STATE_KEY));
 
-            /*
             try {
-                this.discoveryDataLoader = DiscoveryDataCacheLoader.restoreFromBundle(savedInstanceState.getBundle(DISCOVERY_DATA_CACHE_SAVE_STATE_KEY));
+                this.discoveryData = DiscoveryDataCache.restoreFromBundle(savedInstanceState.getBundle(DISCOVERY_DATA_CACHE_SAVE_STATE_KEY));
             } catch (JSONException e) {
                 Log.e(TAG, "Could not restore discovery data cache");
                 e.printStackTrace();
-            }*/
+            }
         }
 
         //Crete new default values when no SaveInstanceState or defective
         if(sortBy == null) {
             sortBy = SortBy.POPULARITY;
         }
-        if(discoveryDataLoader == null){
-            //discoveryDataLoader = new DiscoveryDataCacheLoader(NetworkUtils.POPULAR_MOVIES_SUFFIX);
-            LoaderManager loaderManager = getSupportLoaderManager();
-            Bundle bundle = new Bundle();
-            bundle.putString(DiscoveryDataLoader.SORT_SUFFIX_BUNDLE_KEY, NetworkUtils.POPULAR_MOVIES_SUFFIX);
-            discoveryDataLoader = (DiscoveryDataLoader) loaderManager.restartLoader(DiscoveryDataLoader.LOADER_ID, bundle, this);
+        if(discoveryData == null){
+            discoveryData = new DiscoveryDataCache(NetworkUtils.POPULAR_MOVIES_SUFFIX);
         }
 
-        adapter = new DiscoveryAdapter(discoveryRecyclerView, columns, IMAGE_HEIGHT_TO_WIDTH_RATIO, discoveryDataLoader, this);
-        /*discoveryDataLoader.setDataChangedListener(adapter);
-        discoveryDataLoader.setRequestFailedListener(this);*/
+
+        adapter = new DiscoveryAdapter(discoveryRecyclerView, columns, IMAGE_HEIGHT_TO_WIDTH_RATIO, discoveryData, this);
+        discoveryData.setDataChangedListener(adapter);
+        discoveryData.setRequestFailedListener(this);
 
 
         adapter.setOnFirstLoadingFinishedListener(this);
@@ -159,7 +152,7 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
         onScrollListener = new LoadNextPageScrollListener(layoutManager) {
             @Override
            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                discoveryDataLoader.loadNextPage();
+                discoveryData.loadNextPage();
             }
         };
         discoveryRecyclerView.addOnScrollListener(onScrollListener);
@@ -176,7 +169,7 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
 
 
         if(isNetworkAvailable()) {
-            discoveryDataLoader.loadNextPage();
+            discoveryData.loadNextPage();
         }
     }
 
@@ -218,11 +211,15 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
         Log.v(TAG, "Poster clicked " + position);
 
         Intent movieDetailsIntent = new Intent(this, MovieDetailActivity.class);
-
-        movieDetailsIntent.putExtra(Constants.MOVIE_DETAILS_EXTRA, discoveryDataLoader.getItem(position).toString());
-        startActivity(movieDetailsIntent);
+        try {
+            movieDetailsIntent.putExtra(Constants.MOVIE_DETAILS_EXTRA, discoveryData.getItem(position).toString());
+            startActivity(movieDetailsIntent);
+        } catch (JSONException e) {
+            Log.e(TAG, "Error during getting clicked movie data");
+            e.printStackTrace();
+            Toast.makeText(this, "Couldn't get the movie detail data", Toast.LENGTH_SHORT).show();
+        }
     }
-
 
     /**
      * Hides initial progress bar after first data loaded.
@@ -238,7 +235,7 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
      */
     @Override
     protected void tryRequestAgain() {
-        discoveryDataLoader.loadNextPage();
+        discoveryData.loadNextPage();
     }
 
     /**
@@ -258,7 +255,7 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
             discoveryRecyclerView.stopScroll();
             discoveryRecyclerView.scrollToPosition(0);
             onScrollListener.resetState();
-            discoveryDataLoader.changeSortSuffix(sortSuffix);
+            discoveryData.changeSortSuffix(sortSuffix);
         }
     }
 
@@ -284,15 +281,15 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
     abstract class LoadNextPageScrollListener extends RecyclerView.OnScrollListener {
         // The minimum amount of items to have below your current scroll position
         // before loading more.
-        private int visibleThreshold = 5;
+        private int visibleThreshold = 20;
         // The current offset index of data you have loaded
-        private int currentPage = 1;
+        private int currentPage = 0;
         // The total number of items in the dataset after the last load
         private int previousTotalItemCount = 0;
         // True if we are still waiting for the last set of data to load.
         private boolean loading = true;
         // Sets the starting page index
-        private int startingPageIndex = 1;
+        private int startingPageIndex = 0;
 
         GridLayoutManager mLayoutManager;
 
@@ -348,20 +345,5 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
 
         // Defines the process for actually loading more data based on page
         public abstract void onLoadMore(int page, int totalItemsCount, RecyclerView view);
-    }
-
-    @Override
-    public Loader<DiscoveryDataCache> onCreateLoader(int id, Bundle args) {
-        return new DiscoveryDataLoader(this, args);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<DiscoveryDataCache> loader, DiscoveryDataCache data) {
-        adapter.onDataChanged();
-    }
-
-    @Override
-    public void onLoaderReset(Loader<DiscoveryDataCache> loader) {
-
     }
 }
