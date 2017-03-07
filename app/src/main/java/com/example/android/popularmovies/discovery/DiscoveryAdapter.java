@@ -63,7 +63,7 @@ class DiscoveryAdapter extends RecyclerView.Adapter<DiscoveryViewHolder> impleme
             itemView.setLayoutParams(params);
         }
 
-        Log.v(MainDiscoveryScreen.TAG, "onCreateViewHolder");
+        Log.v(DiscoveryActivity.TAG, "onCreateViewHolder");
 
         DiscoveryViewHolder holder = new DiscoveryViewHolder(itemView);
         holder.setOnPosterClickedListener(onPosterClickedListener);
@@ -74,7 +74,7 @@ class DiscoveryAdapter extends RecyclerView.Adapter<DiscoveryViewHolder> impleme
     @Override
     public void onBindViewHolder(DiscoveryViewHolder holder, int position) {
         final DiscoveryViewHolder h = holder;
-        Log.d(MainDiscoveryScreen.TAG, "onBindHolder: " + position);
+        Log.d(DiscoveryActivity.TAG, "onBindHolder: " + position);
         if (discoveryData.getCount() > position) {
             try {
                 h.loadingNextPageSpinner.setVisibility(View.VISIBLE);

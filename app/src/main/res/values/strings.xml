@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">Popular Movies</string>
+    <string name="app_name" translatable="false">Popular Movies</string>
+
     <string name="sort_by">Sort by</string>
     <string name="sort_by_popularity">Sort by popularity</string>
     <string name="sort_by_ratings">Sort by ratings</string>
@@ -13,4 +14,5 @@
     <string name="average_rating">Average rating:</string>
     <string name="poster_content_description">Poster of the movie</string>
     <string name="error_loading_poster">Loading poster failed</string>
+    <string name="no_api_key_message">You have to specify Api key to access themoviedb.org API first. Register there, get a key and copy it to the Constants.API_KEY.</string>
 </resources>

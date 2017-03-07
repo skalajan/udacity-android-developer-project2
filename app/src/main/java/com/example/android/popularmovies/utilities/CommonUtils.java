@@ -1,5 +1,8 @@
 package com.example.android.popularmovies.utilities;
 
+import android.content.Context;
+import android.util.DisplayMetrics;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -31,5 +34,16 @@ public class CommonUtils {
         SimpleDateFormat df = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
 
         return df.format(date);
+    }
+
+    /**
+     * Calculates the number of columns in grid based on the resolution and density of the device.
+     * @param context Context
+     * @return Number of columns
+     */
+    public static int calculateNoOfColumns(Context context) {
+        DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+        float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
+        return (int) (dpWidth / 140);
     }
 }

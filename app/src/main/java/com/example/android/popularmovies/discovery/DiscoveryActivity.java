@@ -16,6 +16,7 @@ import com.example.android.popularmovies.Constants;
 import com.example.android.popularmovies.model.DiscoveryDataCache;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.moviedetail.MovieDetailActivity;
+import com.example.android.popularmovies.utilities.CommonUtils;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 
 import org.json.JSONException;
@@ -23,19 +24,8 @@ import org.json.JSONException;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnPosterClickedListener, OnFirstLoadingFinishedListener {
-    public static final String TAG = MainDiscoveryScreen.class.getName();
-
-    /**
-     * Screen widths and grid columns for different display sizes.
-     */
-    public static final int SMALL_SCREEN_DP_LIMIT = 480;
-    public static final int MEDIUM_SCREEN_DP_LIMIT = 600;
-    public static final int BIG_SCREEN_DP_LIMIT = 720;
-
-    public static final int SMALL_SCREEN_COLUMNS = 2;
-    public static final int MEDIUM_SCREEN_COLUMNS = 3;
-    public static final int BIG_SCREEN_COLUMNS = 4;
+public class DiscoveryActivity extends NetworkAccessingActivity implements OnPosterClickedListener, OnFirstLoadingFinishedListener {
+    public static final String TAG = DiscoveryActivity.class.getName();
 
     /**
      * Poster height/width ratio to set dynamically height of the posters.
@@ -105,19 +95,14 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
 
         //Check whether the API KEY is present, else do not further initialize and show toast
         if(Constants.API_KEY == null) {
-            Toast.makeText(this, "You have to specify Api key to access themoviedb.org API first. Register there, get a key and copy it to the Constants.API_KEY.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.no_api_key_message, Toast.LENGTH_LONG).show();
             return;
         }
 
         ButterKnife.bind(this);
 
         int screenWidthDp = getResources().getConfiguration().screenWidthDp;
-        if(screenWidthDp <= SMALL_SCREEN_DP_LIMIT)
-            columns = SMALL_SCREEN_COLUMNS;
-        else if(screenWidthDp <= MEDIUM_SCREEN_DP_LIMIT)
-            columns = MEDIUM_SCREEN_COLUMNS;
-        else if(screenWidthDp >= BIG_SCREEN_DP_LIMIT)
-            columns = BIG_SCREEN_COLUMNS;
+        columns = CommonUtils.calculateNoOfColumns(this);
 
 
         layoutManager = new GridLayoutManager(this, columns);
