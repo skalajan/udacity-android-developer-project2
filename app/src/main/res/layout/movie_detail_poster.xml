@@ -1,7 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:id="@+id/iv_poster"
-    android:adjustViewBounds="true"
-    android:contentDescription="@string/poster_content_description">
-</ImageView>
+<android.support.constraint.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fl_movie_poster_placeholder"
+    tools:layout_width="100dp"
+    tools:layout_height="100dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <ProgressBar
+        android:id="@+id/pb_poster_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        tools:layout_constraintTop_creator="1"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="2dp"
+        app:layout_constraintTop_toBottomOf="@+id/iv_loading_poster_error"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toRightOf="@+id/iv_loading_poster_error"
+        android:layout_marginLeft="2dp" />
+
+    <ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/iv_poster"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/poster_content_description"
+        android:visibility="gone"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toTopOf="parent"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="@+id/iv_loading_poster_error"
+        app:layout_constraintTop_toTopOf="parent"></ImageView>
+
+    <TextView
+        tools:text="TESTING PLACEHOLDER"
+        android:textSize="@dimen/poster_placeholder_text_size"
+        android:id="@+id/tv_movie_poster_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        tools:layout_constraintTop_creator="1"
+        tools:layout_constraintRight_creator="1"
+        tools:layout_constraintBottom_creator="1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        tools:layout_constraintLeft_creator="1"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/iv_loading_poster_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_block_black_24dp"
+        android:contentDescription="@string/error_loading_poster"
+        android:visibility="invisible"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/fl_movie_poster_placeholder"
+        app:layout_constraintTop_toTopOf="@+id/iv_poster" />
+</android.support.constraint.ConstraintLayout>
+
+

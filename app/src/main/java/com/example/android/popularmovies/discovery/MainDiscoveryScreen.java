@@ -15,10 +15,13 @@ import android.widget.Toast;
 import com.example.android.popularmovies.Constants;
 import com.example.android.popularmovies.model.DiscoveryDataCache;
 import com.example.android.popularmovies.R;
-import com.example.android.popularmovies.movie_detail.MovieDetailActivity;
+import com.example.android.popularmovies.moviedetail.MovieDetailActivity;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 
 import org.json.JSONException;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnPosterClickedListener, OnFirstLoadingFinishedListener {
     public static final String TAG = MainDiscoveryScreen.class.getName();
@@ -42,9 +45,13 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
     protected int columns;
 
 
-    protected RecyclerView discoveryRecyclerView;
+
+    @BindView(R.id.rv_discovery_list)
+    protected RecyclerView mDiscoveryRecyclerView;
     protected DiscoveryAdapter adapter;
-    protected ProgressBar firstLoadingProgressBar;
+
+    @BindView(R.id.pb_first_loading)
+    protected ProgressBar mFirstLoadingProgressBar;
 
     protected LoadNextPageScrollListener onScrollListener;
     protected GridLayoutManager layoutManager;
@@ -78,8 +85,8 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
         if(discoveryData != null){
             outState.putBundle(DISCOVERY_DATA_CACHE_SAVE_STATE_KEY, discoveryData.saveToBundle());
         }
-        if(discoveryRecyclerView != null && discoveryRecyclerView.getLayoutManager() != null) {
-            int scrollPosition = ((GridLayoutManager) discoveryRecyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+        if(mDiscoveryRecyclerView != null && mDiscoveryRecyclerView.getLayoutManager() != null) {
+            int scrollPosition = ((GridLayoutManager) mDiscoveryRecyclerView.getLayoutManager()).findFirstVisibleItemPosition();
             outState.putInt(SCROLL_POSITION_SAVE_STATE_KEY, scrollPosition);
         }
 
@@ -102,8 +109,7 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
             return;
         }
 
-        discoveryRecyclerView = (RecyclerView) findViewById(R.id.rv_discovery_list);
-        firstLoadingProgressBar = (ProgressBar) findViewById(R.id.pb_first_loading);
+        ButterKnife.bind(this);
 
         int screenWidthDp = getResources().getConfiguration().screenWidthDp;
         if(screenWidthDp <= SMALL_SCREEN_DP_LIMIT)
@@ -137,17 +143,17 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
         }
 
 
-        adapter = new DiscoveryAdapter(discoveryRecyclerView, columns, IMAGE_HEIGHT_TO_WIDTH_RATIO, discoveryData, this);
+        adapter = new DiscoveryAdapter(mDiscoveryRecyclerView, columns, IMAGE_HEIGHT_TO_WIDTH_RATIO, discoveryData, this);
         discoveryData.setDataChangedListener(adapter);
         discoveryData.setRequestFailedListener(this);
 
 
         adapter.setOnFirstLoadingFinishedListener(this);
         adapter.setOnPosterClickedListener(this);
-        discoveryRecyclerView.setAdapter(adapter);
+        mDiscoveryRecyclerView.setAdapter(adapter);
 
-        discoveryRecyclerView.setHasFixedSize(true);
-        discoveryRecyclerView.setLayoutManager(layoutManager);
+        mDiscoveryRecyclerView.setHasFixedSize(true);
+        mDiscoveryRecyclerView.setLayoutManager(layoutManager);
 
         onScrollListener = new LoadNextPageScrollListener(layoutManager) {
             @Override
@@ -155,7 +161,7 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
                 discoveryData.loadNextPage();
             }
         };
-        discoveryRecyclerView.addOnScrollListener(onScrollListener);
+        mDiscoveryRecyclerView.addOnScrollListener(onScrollListener);
 
         /**
          * Scroll to the saved position
@@ -163,7 +169,7 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
         if(savedInstanceState != null){
             int scrollPosition = savedInstanceState.getInt(SCROLL_POSITION_SAVE_STATE_KEY);
             if(scrollPosition != RecyclerView.NO_POSITION) {
-                discoveryRecyclerView.scrollToPosition(scrollPosition);
+                mDiscoveryRecyclerView.scrollToPosition(scrollPosition);
             }
         }
 
@@ -226,8 +232,8 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
      */
     @Override
     public void onAfterFirstLoad() {
-        firstLoadingProgressBar.setVisibility(View.GONE);
-        discoveryRecyclerView.setVisibility(View.VISIBLE);
+        mFirstLoadingProgressBar.setVisibility(View.GONE);
+        mDiscoveryRecyclerView.setVisibility(View.VISIBLE);
     }
 
     /**
@@ -251,9 +257,9 @@ public class MainDiscoveryScreen extends NetworkAccessingActivity implements OnP
             sortSuffix = NetworkUtils.POPULAR_MOVIES_SUFFIX;
         }
 
-        if(discoveryRecyclerView != null) {
-            discoveryRecyclerView.stopScroll();
-            discoveryRecyclerView.scrollToPosition(0);
+        if(mDiscoveryRecyclerView != null) {
+            mDiscoveryRecyclerView.stopScroll();
+            mDiscoveryRecyclerView.scrollToPosition(0);
             onScrollListener.resetState();
             discoveryData.changeSortSuffix(sortSuffix);
         }

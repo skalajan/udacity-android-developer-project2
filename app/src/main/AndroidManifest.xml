@@ -19,7 +19,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".movie_detail.MovieDetailActivity"
+        <activity android:name=".moviedetail.MovieDetailActivity"
             android:parentActivityName=".discovery.MainDiscoveryScreen" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
