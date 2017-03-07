@@ -50,8 +50,6 @@ public class MovieDetailActivity extends AppCompatActivity {
     protected TextView mReleaseDateTextView;
     @BindView(R.id.pb_poster_loading)
     protected ProgressBar mPosterLoadingProgressBar;
-    @BindView(R.id.tv_movie_poster_error)
-    protected TextView mPosterErrorTextView;
     @BindView(R.id.iv_loading_poster_error)
     protected ImageView mLoadingPosterErrorImageView;
 
@@ -92,7 +90,6 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         if(movieTitle != null && !"null".equals(movieTitle)) {
             setTitle(movieTitle);
-            mPosterErrorTextView.setText(movieTitle);
         }
 
         if(originalTitle != null && !"null".equals(originalTitle)){
@@ -149,15 +146,12 @@ public class MovieDetailActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess() {
                             mPosterLoadingProgressBar.setVisibility(View.GONE);
-                            mPosterErrorTextView.setVisibility(View.GONE);
                             mPosterImageView.setVisibility(View.VISIBLE);
                         }
 
                         @Override
                         public void onError() {
                             mPosterLoadingProgressBar.setVisibility(View.INVISIBLE);
-                            mPosterErrorTextView.setVisibility(View.VISIBLE);
-                            findViewById(R.id.fl_movie_poster_placeholder).setBackgroundColor(ContextCompat.getColor(MovieDetailActivity.this, R.color.posterPlaceholderBackground));
                             mLoadingPosterErrorImageView.setVisibility(View.VISIBLE);
                         }
                     });;
