@@ -15,4 +15,10 @@
     <string name="poster_content_description">Poster of the movie</string>
     <string name="error_loading_poster">Loading poster failed</string>
     <string name="no_api_key_message">You have to specify Api key to access themoviedb.org API first. Register there, get a key and copy it to the Constants.API_KEY.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="popular">Popular</string>
+    <string name="top_rated">Top rated</string>
+    <string name="my_favorites">My favorites</string>
 </resources>

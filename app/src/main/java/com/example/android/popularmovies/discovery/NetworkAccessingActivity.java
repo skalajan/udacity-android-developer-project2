@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -30,7 +31,7 @@ public abstract class NetworkAccessingActivity extends AppCompatActivity impleme
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        networkErrorBoxRelativeLayout = (RelativeLayout) findViewById(R.id.rl_error_message_box);
+     /*   networkErrorBoxRelativeLayout = (RelativeLayout) findViewById(R.id.rl_error_message_box);
         tryAgainButton = (Button) findViewById(R.id.btn_try_again);
 
         tryAgainButton.setOnClickListener(this);
@@ -39,6 +40,7 @@ public abstract class NetworkAccessingActivity extends AppCompatActivity impleme
             networkError = true;
             showNetworkFailedBox();
         }
+        */
     }
 
     /**

@@ -10,5 +10,8 @@ Licences:
 AppIcon
 Icon of the movie camera used in the app icon was created by Catalin Fertu (http://www.flaticon.com/authors/catalin-fertu) from www.flaticon.com
 
+Like Icon
+Icon of the thumb up used for the first tab in Discovery Activity created by By Gregor Cresnar (http://www.flaticon.com/authors/gregor-cresnar) from www.flaticon.com
+
 LoadNextPageScrollListener
 Based on "Endless RecyclerView OnScrollListener" created by WoongBi Kim (https://github.com/ssinss), available at https://gist.github.com/ssinss/e06f12ef66c51252563e

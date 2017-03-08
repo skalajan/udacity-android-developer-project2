@@ -1,6 +1,9 @@
 package com.example.android.popularmovies.model;
 
+import android.content.Context;
+import android.content.Loader;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -11,8 +14,13 @@ import java.util.ArrayList;
 /**
  * Class preloading the discovery data when (before) the user hits the end of the recycler view. And changes the requests based on the sorting order.
  */
-public class DiscoveryDataCache {
+public class DiscoveryDataCache implements LoaderManager.LoaderCallbacks<DiscoveryDataResponse>{
     private static final String TAG = DiscoveryDataCache.class.getName();
+
+    private static final int LOADER_ID = 111;
+
+    private final Context context;
+    private final LoaderManager loaderManager;
 
     private ArrayList<DiscoveryDataResponse> discoveryResponses;
     private ArrayList<Integer> indexesFrom;
@@ -29,17 +37,22 @@ public class DiscoveryDataCache {
     private static final String SAVE_RESPONSES_IN_BUNDLE_KEY = "RESPONSES_KEY";
     private static final String SAVE_SORT_SUFFIX_IN_BUNDLE_KEY = "SUFFIX_KEY";
 
+    private static final String SORT_SUFFIX_BUNDLE_KEY = "SORT_SUFFIX_BUNDLE_KEY ";
+    private static final String LOADING_PAGE_NUMBER_BUNDLE_KEY = "LOADING_PAGE_NUMBER_BUNDLE_KEY ";
+
 
     /**
      * @param sortSuffix Suffix used in the URL to make the sorting.
      */
-    public DiscoveryDataCache(String sortSuffix){
+    public DiscoveryDataCache(String sortSuffix, Context context, LoaderManager loaderManager){
         discoveryResponses = new ArrayList<>();
 
         indexesFrom = new ArrayList<>();
         indexesTo = new ArrayList<>();
 
         this.sortSuffix = sortSuffix;
+        this.context = context;
+        this.loaderManager = loaderManager;
     }
 
     /**
@@ -113,7 +126,11 @@ public class DiscoveryDataCache {
             int nextPage = discoveryResponses.size() + 1;
             try {
                 if (discoveryResponses.size() == 0 || (discoveryResponses.size() > 0 && discoveryResponses.get(0).getTotalPages() >= nextPage)) {
-                    new DiscoveryRequest(sortSuffix).execute(nextPage);
+                    Bundle args = new Bundle();
+                    args.putString(SORT_SUFFIX_BUNDLE_KEY, sortSuffix);
+                    args.putInt(LOADING_PAGE_NUMBER_BUNDLE_KEY, nextPage);
+
+                    loaderManager.restartLoader(LOADER_ID, args, this);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -206,11 +223,11 @@ public class DiscoveryDataCache {
      * @return Restored data cache
      * @throws JSONException
      */
-    public static DiscoveryDataCache restoreFromBundle(Bundle bundle) throws JSONException {
+    public static DiscoveryDataCache restoreFromBundle(Bundle bundle, Context context, LoaderManager loaderManager) throws JSONException {
         String sortSuffix = bundle.getString(SAVE_SORT_SUFFIX_IN_BUNDLE_KEY);
         ArrayList<String> responsesStrings = bundle.getStringArrayList(SAVE_RESPONSES_IN_BUNDLE_KEY);
 
-        DiscoveryDataCache restored = new DiscoveryDataCache(sortSuffix);
+        DiscoveryDataCache restored = new DiscoveryDataCache(sortSuffix, context, loaderManager);
         if (responsesStrings != null) {
             for(String responseString : responsesStrings){
                 restored.discoveryResponses.add(new DiscoveryDataResponse(responseString));
@@ -221,65 +238,26 @@ public class DiscoveryDataCache {
         return restored;
     }
 
-    /**
-     * Discovery item async request class.
-     */
-    private class DiscoveryRequest extends DiscoveryDataAsyncRequest{
-        DiscoveryRequest(String moviesPathSuffix) {
-            super(moviesPathSuffix);
-        }
 
-        /**
-         * Sets the loading new data flag
-         */
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-
-            loadingNewData = true;
-            //notifyDataChanged();
-            onLoadingNewData();
-        }
-
-        /**
-         * Informs the cache that new data received and unset the loading flag.
-         * @param jsonObject Received object.
-         */
-        @Override
-        protected void onPostExecute(DiscoveryDataResponse jsonObject) {
-            super.onPostExecute(jsonObject);
-            if(jsonObject != null){
-                dataReceived(jsonObject);
-            }
-            loadingNewData = false;
-        }
-
-        /**
-         * Triggers listener when request timeouts.
-         */
-        @Override
-        public void onTimeout() {
-            super.onTimeout();
-
-            Log.d(TAG, "request timeout");
-
-            if(requestFailedListener != null)
-                requestFailedListener.onTimeout();
-        }
-
-
-        /**
-         * Triggers listener when request fails.
-         */
-        @Override
-        public void onFail() {
-            super.onFail();
-
-            Log.d(TAG, "request failed");
-
-            if(requestFailedListener != null)
-                requestFailedListener.onFail();
-        }
+    @Override
+    public android.support.v4.content.Loader<DiscoveryDataResponse> onCreateLoader(int id, Bundle args) {
+        return new DiscoveryDataAsyncLoader(context, args.getString(SORT_SUFFIX_BUNDLE_KEY), args.getInt(LOADING_PAGE_NUMBER_BUNDLE_KEY));
     }
 
+    @Override
+    public void onLoadFinished(android.support.v4.content.Loader<DiscoveryDataResponse> loader, DiscoveryDataResponse data) {
+        DiscoveryDataAsyncLoader l = (DiscoveryDataAsyncLoader) loader;
+        if(data == null){
+            requestFailedListener.onFail();
+        }else if(sortSuffix.equals(l.getMoviesPathSuffix())){
+                dataReceived(data);
+        }
+
+        loadingNewData = false;
+    }
+
+    @Override
+    public void onLoaderReset(android.support.v4.content.Loader<DiscoveryDataResponse> loader) {
+
+    }
 }

@@ -7,4 +7,5 @@
     <color name="detailBackground">#616161</color>
     <color name="errorBoxColor">#ffbd24</color>
     <color name="posterPlaceholderBackground">#cecece</color>
+    <color name="white">#ffffff</color>
 </resources>
