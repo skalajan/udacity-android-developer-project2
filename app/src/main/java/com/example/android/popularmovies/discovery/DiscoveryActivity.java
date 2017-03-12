@@ -9,7 +9,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -75,38 +74,9 @@ public class DiscoveryActivity extends NetworkAccessingActivity implements OnPos
         mTabLayout.getTabAt(0).setText(R.string.popular);
         mTabLayout.getTabAt(1).setIcon(R.drawable.ic_star_border_black_24dp);
         mTabLayout.getTabAt(1).setText(R.string.top_rated);
-        mTabLayout.getTabAt(2).setIcon(R.drawable.ic_favorite_border_black_24dp);
+        mTabLayout.getTabAt(2).setIcon(R.drawable.ic_favorite_border_white_24dp);
         mTabLayout.getTabAt(2).setText(R.string.my_favorites);
 
-    }
-
-    /**
-     * Inflates the menu with sorting button and sets its title
-     * @param menu Menu to be inflated
-     * @return True to show the menu
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        /*MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
-
-        updateSortByMenuItemTitle(menu.findItem(R.id.sort_by_menu_item));*/
-
-        return true;
-    }
-
-    /**
-     * Listens to click on sorting button.
-     * @param item Clicked menu item
-     * @return
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == R.id.sort_by_menu_item) {
-            //switchSorting();
-            updateSortByMenuItemTitle(item);
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -119,7 +89,7 @@ public class DiscoveryActivity extends NetworkAccessingActivity implements OnPos
 
         Intent movieDetailsIntent = new Intent(this, MovieDetailActivity.class);
         //try {
-            //movieDetailsIntent.putExtra(Constants.MOVIE_DETAILS_EXTRA, discoveryData.getItem(position).toString());
+            //movieDetailsIntent.putExtra(Constants.MOVIE_DETAILS_EXTRA, discoveryData.getMovieResult(position).toString());
             startActivity(movieDetailsIntent);
         /*} catch (JSONException e) {
             Log.e(TAG, "Error during getting clicked movie data");
@@ -146,17 +116,17 @@ public class DiscoveryActivity extends NetworkAccessingActivity implements OnPos
     }
 
     /**
-     * Updates the sorting menu item title.
+     * Updates the sorting (titleResIdmenu item title.
      * @param item Item that should change the title.
      */
-    protected void updateSortByMenuItemTitle(MenuItem item) {
+        protected void updateSortByMenuItemTitle(MenuItem item) {
         /*int titleResId;
         if(sortBy == SortBy.POPULARITY)
             titleResId = R.string.sort_by_ratings;
         else
             titleResId = R.string.sort_by_popularity;
 
-        item.setTitle(titleResId);*/
+        item.setTitle);*/
     }
 
 
@@ -170,9 +140,24 @@ public class DiscoveryActivity extends NetworkAccessingActivity implements OnPos
 
         @Override
         public Fragment getItem(int position) {
-            if(mFragments[position] == null)
-                mFragments[position] = new DiscoveryGridFragment();
+            if(mFragments[position] == null) {
+                mFragments[position] = createFragment(position);
+            }
             return mFragments[position];
+        }
+
+        Fragment createFragment(int position){
+            switch(position){
+                case 0:
+                    return new DiscoveryPopularGridFragment();
+                case 1:
+                    return new DiscoveryTopRatedGridFragment();
+                case 2:
+                    return new DiscoveryMyFavoritesGridFragment();
+                default:
+                    Log.e(TAG, "Unknown fragment, not in 0-2 range");
+                    return null;
+            }
         }
 
         @Override

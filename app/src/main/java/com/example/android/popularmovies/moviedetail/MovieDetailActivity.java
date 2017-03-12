@@ -1,10 +1,14 @@
 package com.example.android.popularmovies.moviedetail;
 
 import android.net.Uri;
-import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -12,14 +16,16 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.android.popularmovies.Constants;
+import com.example.android.popularmovies.PopularMoviesActivity;
+import com.example.android.popularmovies.PopularMoviesApplication;
 import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.model.MovieResult;
 import com.example.android.popularmovies.utilities.CommonUtils;
 import com.example.android.popularmovies.utilities.NetworkUtils;
+import com.google.gson.Gson;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -31,10 +37,10 @@ import butterknife.ButterKnife;
 /**
  * Activity class with clicked movie detail.
  */
-public class MovieDetailActivity extends AppCompatActivity {
+public class MovieDetailActivity extends PopularMoviesActivity {
     private static final String TAG = MovieDetailActivity.class.getSimpleName();
 
-    protected JSONObject movieDetails;
+    protected MovieResult movieDetails;
 
     @BindView(R.id.iv_poster)
     protected ImageView mPosterImageView;
@@ -52,6 +58,8 @@ public class MovieDetailActivity extends AppCompatActivity {
     protected ProgressBar mPosterLoadingProgressBar;
     @BindView(R.id.iv_loading_poster_error)
     protected ImageView mLoadingPosterErrorImageView;
+    @BindView(R.id.toolbar)
+    protected Toolbar mToolbar;
 
     /**
      * Inflates activity_movie_detail layout and sets the subviews according to the information for the selected movie from intent extras.
@@ -64,15 +72,18 @@ public class MovieDetailActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
+        setSupportActionBar(mToolbar);
+        ActionBar ab = getSupportActionBar();
+        if(ab != null) {
+            ab.setDisplayHomeAsUpEnabled(true);
+            ab.setDisplayShowHomeEnabled(true);
+        }
+
         String jsonString = getIntent().getStringExtra(Constants.MOVIE_DETAILS_EXTRA);
         if(jsonString != null){
-            try {
-                movieDetails = new JSONObject(jsonString);
-                initView();
-            } catch (JSONException e) {
-                Log.e(TAG, "Could not parse the movies detail from extras");
-                e.printStackTrace();
-            }
+            Gson gson = PopularMoviesApplication.getGson();
+            movieDetails = gson.fromJson(jsonString, MovieResult.class);
+            initView();
         }else{
             Log.e(TAG, "Json string extra not found");
         }
@@ -82,11 +93,11 @@ public class MovieDetailActivity extends AppCompatActivity {
      * Gets the information about the movie from the movieDetails and sets the views
      */
     private void initView() {
-        String movieTitle = movieDetails.optString("title");
-        String originalTitle = movieDetails.optString("original_title");
-        String voteAverage = movieDetails.optString("vote_average");
-        String plotSynopsis = movieDetails.optString("overview");
-        String releaseDateString = movieDetails.optString("release_date");
+        String movieTitle = movieDetails.getTitle();
+        String originalTitle = movieDetails.getOriginalTitle();
+        String voteAverage = movieDetails.getVoteAverage();
+        String plotSynopsis = movieDetails.getOverview();
+        String releaseDateString = movieDetails.getReleaseDate();
 
         if(movieTitle != null && !"null".equals(movieTitle)) {
             setTitle(movieTitle);
@@ -132,11 +143,50 @@ public class MovieDetailActivity extends AppCompatActivity {
     }
 
     /**
+     * Inflates the menu with heart icon to remove/add movie to favorites.
+     * @param menu Menu to be inflated
+     * @return True to show the menu
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.movie_detail, menu);
+
+        if(MovieResult.isInFavorites(movieDetails.getMovieId())){
+            menu.findItem(R.id.favorite_menu_item).setIcon(R.drawable.ic_favorite_white_24dp);
+        }
+        return true;
+    }
+
+    /**
+     * Listens to click on sorting button.
+     * @param item Clicked menu item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == R.id.favorite_menu_item) {
+            toggleFavorite(item);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void toggleFavorite(MenuItem item){
+        if(MovieResult.isInFavorites(movieDetails.getMovieId())){
+            MovieResult.removeFromFavorites(movieDetails.getMovieId());
+            item.setIcon(R.drawable.ic_favorite_border_white_24dp);
+        }else{
+            MovieResult.addToFavorites(this.movieDetails);
+            item.setIcon(R.drawable.ic_favorite_white_24dp);
+        }
+    }
+
+    /**
      * Loads movie poster into mPosterImageView
      */
     private void loadPosterImage() {
         String posterUrl;
-        posterUrl = movieDetails.optString("poster_path");
+        posterUrl = movieDetails.getPosterPath();
         if (posterUrl != null && !"null".equals(posterUrl)) {
             Uri imageUri = NetworkUtils.buildImageUri(posterUrl);
             Log.d(TAG, "Loading image " + imageUri.toString());
@@ -154,7 +204,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                             mPosterLoadingProgressBar.setVisibility(View.INVISIBLE);
                             mLoadingPosterErrorImageView.setVisibility(View.VISIBLE);
                         }
-                    });;
+                    });
         }else{
             Log.d(TAG, "Null image url");
         }

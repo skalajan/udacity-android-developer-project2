@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
+import com.example.android.popularmovies.PopularMoviesActivity;
 import com.example.android.popularmovies.R;
 import com.example.android.popularmovies.model.RequestFailedListener;
 
@@ -19,7 +20,7 @@ import com.example.android.popularmovies.model.RequestFailedListener;
  *
  * TODO LISTENS TO THE NETWORK STATUS CHANGE AND TRY TO LOAD AGAIN AUTOMATICALLY
  */
-public abstract class NetworkAccessingActivity extends AppCompatActivity implements  View.OnClickListener, RequestFailedListener {
+public abstract class NetworkAccessingActivity extends PopularMoviesActivity implements  View.OnClickListener, RequestFailedListener {
     protected RelativeLayout networkErrorBoxRelativeLayout;
     protected Button tryAgainButton;
 

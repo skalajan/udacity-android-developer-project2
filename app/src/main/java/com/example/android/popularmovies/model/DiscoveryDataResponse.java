@@ -1,58 +1,51 @@
 package com.example.android.popularmovies.model;
 
+import com.google.gson.annotations.Expose;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Collection;
+import java.util.List;
 
 
 /**
  * Class representing one response from the server with the list of popular/top rated movies.
  */
-public class DiscoveryDataResponse extends JSONObject {
-    /**
-     *
-     * @param json Json sting returned with movies list data.
-     * @throws JSONException Throws exception when the string couldn't be parsed to JSONObject.
-     */
-    public DiscoveryDataResponse(String json) throws JSONException {
-        super(json);
-    }
+public class DiscoveryDataResponse {
+    @Expose
+    private List<MovieResult> results;
+    @Expose
+    private int page;
+    @Expose
+    private int total_results;
+    @Expose
+    private int total_pages;
 
     /**
-     * Gets the the movies from the response.
-     * @return JSONArray with the movies.
-     * @throws JSONException
+     * Gets movie at the specified position in JSON array.
+     * @param position Index of the movie in results array.
+     * @return MovieResult representing the movie.
      */
-    private JSONArray getResults() throws JSONException {
-        return getJSONArray("results");
-    }
-
-    /**
-     * Gets movie at the specified position in array.
-     * @param position Index of the movie in JSONArray.
-     * @return JSONObject representing the movie.
-     * @throws JSONException Throws if the index does not exists or doesn't contain JSONObject.
-     */
-    JSONObject getItem(int position) throws JSONException {
-        return getResults().getJSONObject(position);
+    public MovieResult getMovieResult(int position){
+        return results.get(position);
     }
 
     /**
      * Gets page of the response
      * @return Page of the response
-     * @throws JSONException Thrown if not present or isn't an Integer.
      */
-    int getPage() throws JSONException {
-        return getInt("page");
+    int getPage(){
+        return page;
     }
 
     /**
      * Gets the total number of movies in the list on the server (all pages)
      * @return Total number of movies
-     * @throws JSONException Thrown if not present or not an Integer
      */
     int getTotalResults() throws JSONException {
-        return getInt("total_results");
+        return total_results;
     }
 
     /**
@@ -61,7 +54,7 @@ public class DiscoveryDataResponse extends JSONObject {
      * @throws JSONException Thrown if not present or not an Integer
      */
     int getTotalPages() throws JSONException{
-        return getInt("total_pages");
+        return total_pages;
     }
 
     /**
@@ -69,12 +62,8 @@ public class DiscoveryDataResponse extends JSONObject {
      * @return Size of returned movies list.
      */
     int size(){
-        int len = 0;
-        try {
-            len = getResults().length();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return len;
+        if(results == null)
+            return 0;
+        else return results.size();
     }
 }

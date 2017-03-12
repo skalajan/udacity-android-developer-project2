@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,17 +13,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.example.android.popularmovies.Constants;
+import com.example.android.popularmovies.PopularMoviesApplication;
 import com.example.android.popularmovies.R;
-import com.example.android.popularmovies.model.DiscoveryDataCache;
+import com.example.android.popularmovies.model.DataCache;
 import com.example.android.popularmovies.model.RequestFailedListener;
 import com.example.android.popularmovies.moviedetail.MovieDetailActivity;
 import com.example.android.popularmovies.utilities.CommonUtils;
-import com.example.android.popularmovies.utilities.NetworkUtils;
-
-import org.json.JSONException;
+import com.google.gson.Gson;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,7 +34,7 @@ import butterknife.ButterKnife;
  * Use the {@link DiscoveryGridFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class DiscoveryGridFragment extends Fragment implements OnPosterClickedListener, OnFirstLoadingFinishedListener, RequestFailedListener {
+public abstract class DiscoveryGridFragment extends Fragment implements OnPosterClickedListener, OnFirstLoadingFinishedListener, RequestFailedListener {
     private static final String TAG = "DiscoveryGridFragment";
 
     private static final String DISCOVERY_DATA_CACHE_SAVE_STATE_KEY = "DISCOVERY_CACHE_SAVE_STATE_KEY";
@@ -82,11 +81,15 @@ public class DiscoveryGridFragment extends Fragment implements OnPosterClickedLi
     protected LoadNextPageScrollListener onScrollListener;
     protected GridLayoutManager layoutManager;
 
-    protected DiscoveryDataCache discoveryData;
+    protected DataCache discoveryData;
 
     public DiscoveryGridFragment() {
         // Required empty public constructor
     }
+
+    abstract DataCache getDataCache();
+
+    abstract DataCache restoreDataCacheFromBundle(Bundle bundle, Context context, LoaderManager loaderManager);
 
     /**
      * Use this factory method to create a new instance of
@@ -98,12 +101,14 @@ public class DiscoveryGridFragment extends Fragment implements OnPosterClickedLi
      */
     // TODO: Rename and change types and number of parameters
     public static DiscoveryGridFragment newInstance(String param1, String param2) {
-        DiscoveryGridFragment fragment = new DiscoveryGridFragment();
+        //DiscoveryGridFragment fragment = new DiscoveryGridFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+        //fragment.setArguments(args);
+        //return fragment;
+
+        return null;
     }
 
     @Override
@@ -129,13 +134,9 @@ public class DiscoveryGridFragment extends Fragment implements OnPosterClickedLi
         //Try to restore the saved information during onSaveInstanceState
         if(savedInstanceState != null){
             sortBy = SortBy.valueOf(savedInstanceState.getString(SORT_BY_SAVE_STATE_KEY));
+            this.discoveryData = restoreDataCacheFromBundle(savedInstanceState.getBundle(DISCOVERY_DATA_CACHE_SAVE_STATE_KEY), getContext(), getLoaderManager());
 
-            try {
-                this.discoveryData = DiscoveryDataCache.restoreFromBundle(savedInstanceState.getBundle(DISCOVERY_DATA_CACHE_SAVE_STATE_KEY), getContext(), getLoaderManager());
-            } catch (JSONException e) {
-                Log.e(TAG, "Could not restore discovery data cache");
-                e.printStackTrace();
-            }
+            this.onAfterFirstLoad();
         }
 
         //Crete new default values when no SaveInstanceState or defective
@@ -143,11 +144,12 @@ public class DiscoveryGridFragment extends Fragment implements OnPosterClickedLi
             sortBy = SortBy.POPULARITY;
         }
         if(discoveryData == null){
-            discoveryData = new DiscoveryDataCache(NetworkUtils.POPULAR_MOVIES_SUFFIX, getContext(), getLoaderManager());
+            discoveryData = getDataCache();
         }
 
 
         adapter = new DiscoveryAdapter(mDiscoveryRecyclerView, columns, IMAGE_HEIGHT_TO_WIDTH_RATIO, discoveryData, getContext());
+
         discoveryData.setDataChangedListener(adapter);
         discoveryData.setRequestFailedListener(this);
 
@@ -193,14 +195,11 @@ public class DiscoveryGridFragment extends Fragment implements OnPosterClickedLi
         Log.v(TAG, "Poster clicked " + position);
 
         Intent movieDetailsIntent = new Intent(getContext(), MovieDetailActivity.class);
-        try {
-            movieDetailsIntent.putExtra(Constants.MOVIE_DETAILS_EXTRA, discoveryData.getItem(position).toString());
-            startActivity(movieDetailsIntent);
-        } catch (JSONException e) {
-            Log.e(TAG, "Error during getting clicked movie data");
-            e.printStackTrace();
-            Toast.makeText(getContext(), "Couldn't get the movie detail data", Toast.LENGTH_SHORT).show();
-        }
+
+        Gson gson = PopularMoviesApplication.getGson();
+        movieDetailsIntent.putExtra(Constants.MOVIE_DETAILS_EXTRA, gson.toJson(discoveryData.getItem(position)));
+        startActivity(movieDetailsIntent);
+
     }
 
     // TODO: Rename method, update argument and hook method into UI event

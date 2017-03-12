@@ -10,8 +10,9 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.model.DataCache;
 import com.example.android.popularmovies.model.DataChangedListener;
-import com.example.android.popularmovies.model.DiscoveryDataCache;
+import com.example.android.popularmovies.model.MovieResult;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
@@ -29,7 +30,7 @@ class DiscoveryAdapter extends RecyclerView.Adapter<DiscoveryViewHolder> impleme
 
     private int columns;
     private double imageHeightToWidthRatio;
-    private DiscoveryDataCache discoveryData;
+    private DataCache discoveryData;
     private Context context;
     private RecyclerView discoveryRecyclerView;
     private OnFirstLoadingFinishedListener onFirstLoadingFinishedListener;
@@ -42,7 +43,7 @@ class DiscoveryAdapter extends RecyclerView.Adapter<DiscoveryViewHolder> impleme
      * @param discoveryData Data cache with discovery data.
      * @param context Activity context
      */
-    DiscoveryAdapter(RecyclerView discoveryRecyclerView, int columns, double imageHeightToWidthRatio, DiscoveryDataCache discoveryData, Context context) {
+    DiscoveryAdapter(RecyclerView discoveryRecyclerView, int columns, double imageHeightToWidthRatio, DataCache discoveryData, Context context) {
         this.columns = columns;
 
         this.imageHeightToWidthRatio = imageHeightToWidthRatio;
@@ -76,39 +77,35 @@ class DiscoveryAdapter extends RecyclerView.Adapter<DiscoveryViewHolder> impleme
         final DiscoveryViewHolder h = holder;
         Log.d(DiscoveryActivity.TAG, "onBindHolder: " + position);
         if (discoveryData.getCount() > position) {
-            try {
-                h.loadingNextPageSpinner.setVisibility(View.VISIBLE);
-                h.errorLoadingImageView.setVisibility(View.INVISIBLE);
+            h.loadingNextPageSpinner.setVisibility(View.VISIBLE);
+            h.errorLoadingImageView.setVisibility(View.INVISIBLE);
 
-                JSONObject item = discoveryData.getItem(position);
-                if (item != null) {
-                    String posterUrl = item.optString("poster_path");
-                    if (posterUrl != null && !"null".equals(posterUrl)) {
-                        Uri imageUri = NetworkUtils.buildImageUri(posterUrl);
-                        Log.d(TAG, "Loading image " + imageUri.toString());
-                        Picasso.with(context)
-                                .load(imageUri)
-                                .into(holder.movieImageView, new Callback() {
-                                    @Override
-                                    public void onSuccess() {
-                                        h.loadingNextPageSpinner.setVisibility(View.INVISIBLE);
-                                    }
+            MovieResult item = discoveryData.getItem(position);
+            if (item != null) {
+                String posterUrl = item.getPosterPath();
+                if (posterUrl != null && !"null".equals(posterUrl)) {
+                    Uri imageUri = NetworkUtils.buildImageUri(posterUrl);
+                    Log.d(TAG, "Loading image " + imageUri.toString());
+                    Picasso.with(context)
+                            .load(imageUri)
+                            .into(holder.movieImageView, new Callback() {
+                                @Override
+                                public void onSuccess() {
+                                    h.loadingNextPageSpinner.setVisibility(View.INVISIBLE);
+                                }
 
-                                    @Override
-                                    public void onError() {
-                                        h.loadingNextPageSpinner.setVisibility(View.INVISIBLE);
-                                        h.errorLoadingImageView.setVisibility(View.VISIBLE);
-                                    }
-                                });
-                    } else {
-                        Picasso.with(context).cancelRequest(holder.movieImageView);
-                        Log.v(TAG, "Null image url");
-                    }
+                                @Override
+                                public void onError() {
+                                    h.loadingNextPageSpinner.setVisibility(View.INVISIBLE);
+                                    h.errorLoadingImageView.setVisibility(View.VISIBLE);
+                                }
+                            });
                 } else {
-                    holder.loadingNextPageSpinner.setVisibility(View.VISIBLE);
+                    Picasso.with(context).cancelRequest(holder.movieImageView);
+                    Log.v(TAG, "Null image url");
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
+            } else {
+                holder.loadingNextPageSpinner.setVisibility(View.VISIBLE);
             }
         }
     }
@@ -122,7 +119,7 @@ class DiscoveryAdapter extends RecyclerView.Adapter<DiscoveryViewHolder> impleme
 
     @Override
     public void onDataChanged() {
-        if (firstLoading && discoveryData.getCount() > 0) {
+        if (firstLoading) {
             firstLoading = false;
 
             if(onFirstLoadingFinishedListener != null)

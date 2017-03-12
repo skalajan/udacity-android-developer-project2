@@ -4,7 +4,9 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.example.android.popularmovies.Constants;
+import com.example.android.popularmovies.PopularMoviesApplication;
 import com.example.android.popularmovies.model.DiscoveryDataResponse;
+import com.google.gson.Gson;
 
 import org.json.JSONException;
 
@@ -99,6 +101,8 @@ public class NetworkUtils {
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         urlConnection.setConnectTimeout(REQUEST_TIMEOUT);
         urlConnection.setReadTimeout(REQUEST_TIMEOUT);
+
+        Gson gson = PopularMoviesApplication.getGson();
         try {
             InputStream in = urlConnection.getInputStream();
 
@@ -107,13 +111,10 @@ public class NetworkUtils {
 
             boolean hasInput = scanner.hasNext();
             if (hasInput) {
-                return new DiscoveryDataResponse(scanner.next());
+                return gson.fromJson(scanner.next(), DiscoveryDataResponse.class);
             } else {
                 return null;
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-            return null;
         } finally {
             urlConnection.disconnect();
         }
