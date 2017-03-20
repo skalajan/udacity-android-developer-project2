@@ -4,23 +4,24 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.example.android.popularmovies.PopularMoviesActivity;
 import com.example.android.popularmovies.R;
-import com.example.android.popularmovies.model.RequestFailedListener;
+import com.example.android.popularmovies.model.RequestFailedEvent;
+import com.example.android.popularmovies.model.RequestFailedSubscriber;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 
 /**
  * Abstract activity class that checks internet connectivity and reacts to the failed network requests. Shows the network error box and retries the request when try again button pressed.
  *
- * TODO LISTENS TO THE NETWORK STATUS CHANGE AND TRY TO LOAD AGAIN AUTOMATICALLY
  */
-public abstract class NetworkAccessingActivity extends PopularMoviesActivity implements  View.OnClickListener, RequestFailedListener {
+public abstract class NetworkAccessingActivity extends PopularMoviesActivity implements  View.OnClickListener, RequestFailedSubscriber {
     protected RelativeLayout networkErrorBoxRelativeLayout;
     protected Button tryAgainButton;
 
@@ -32,7 +33,7 @@ public abstract class NetworkAccessingActivity extends PopularMoviesActivity imp
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-     /*   networkErrorBoxRelativeLayout = (RelativeLayout) findViewById(R.id.rl_error_message_box);
+        networkErrorBoxRelativeLayout = (RelativeLayout) findViewById(R.id.rl_error_message_box);
         tryAgainButton = (Button) findViewById(R.id.btn_try_again);
 
         tryAgainButton.setOnClickListener(this);
@@ -41,7 +42,20 @@ public abstract class NetworkAccessingActivity extends PopularMoviesActivity imp
             networkError = true;
             showNetworkFailedBox();
         }
-        */
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        EventBus.getDefault().unregister(this);
     }
 
     /**
@@ -102,15 +116,17 @@ public abstract class NetworkAccessingActivity extends PopularMoviesActivity imp
      * Reacts on the request timeout.
      */
     @Override
-    public void onTimeout() {
+    public void onRequestTimeout() {
         onRequestNotCompleted();
     }
 
     /**
-     * Reacts in the request failed.
+     * Listens to the request failed event from the EventBus.
+     * @param event Event object.
      */
     @Override
-    public void onFail() {
+    @Subscribe
+    public void onRequestFailed(RequestFailedEvent event) {
         onRequestNotCompleted();
     }
 }

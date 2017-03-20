@@ -14,7 +14,7 @@
         android:id="@+id/tv_network_request"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:paddingTop="10dp" />
+        android:paddingTop="@dimen/networ_error_text_padding_top" />
 
     <TextView
         android:text="@string/check_connectivity"

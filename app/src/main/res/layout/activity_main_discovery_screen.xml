@@ -1,35 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.example.android.popularmovies.discovery.DiscoveryActivity"
-    android:background="@color/discoveryBackground">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
+    <android.support.design.widget.CoordinatorLayout
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        tools:context="com.example.android.popularmovies.discovery.DiscoveryActivity"
+        android:background="@color/discoveryBackground">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+            android:theme="@style/AppTheme"
+            >
+                <include layout="@layout/toolbar_layout" />
+
+                <android.support.design.widget.TabLayout
+                    android:paddingTop="@dimen/tabs_padding_top"
+                    android:id="@+id/tabs"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:tabMode="fixed"
+                    app:layout_scrollFlags="scroll|exitUntilCollapsed|enterAlways"
+                    android:minHeight="@dimen/tabs_min_height"
+                    android:background="@color/colorPrimaryDark"
+                    app:tabGravity="fill"/>
+        </android.support.design.widget.AppBarLayout>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"  />
+    </android.support.design.widget.CoordinatorLayout>
+
+    <include
+        android:id="@+id/rl_error_message_box"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        android:theme="@style/AppTheme"
-        >
-            <include layout="@layout/toolbar_layout" />
-
-            <android.support.design.widget.TabLayout
-                android:paddingTop="5dp"
-                android:id="@+id/tabs"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:tabMode="fixed"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed|enterAlways"
-                android:minHeight="42dp"
-                android:background="@color/colorPrimaryDark"
-                app:tabGravity="fill"/>
-    </android.support.design.widget.AppBarLayout>
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/viewpager"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"  />
-</android.support.design.widget.CoordinatorLayout>
+        layout="@layout/network_error_box"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+    />
+</android.support.constraint.ConstraintLayout>

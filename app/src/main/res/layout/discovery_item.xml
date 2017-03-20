@@ -19,7 +19,7 @@
         android:id="@+id/iv_loading_poster_error"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_block_black_24dp"
+        app:srcCompat="@drawable/ic_block_black_24dp"
         android:contentDescription="@string/error_loading_poster"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"

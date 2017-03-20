@@ -4,17 +4,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 
-import com.example.android.popularmovies.model.DataCache;
-import com.example.android.popularmovies.model.FavoritesDiscoveryDataCache;
-import com.example.android.popularmovies.model.RemoteDiscoveryDataCache;
-import com.example.android.popularmovies.utilities.NetworkUtils;
-
-import org.json.JSONException;
+import com.example.android.popularmovies.model.cache.DataCache;
+import com.example.android.popularmovies.model.cache.FavoritesDiscoveryDataCache;
 
 /**
- * Created by kjs566 on 3/10/2017.
+ * Fragment with favorite items saved in the DB.
  */
-
 public class DiscoveryMyFavoritesGridFragment extends DiscoveryGridFragment {
     @Override
     public void onStart() {

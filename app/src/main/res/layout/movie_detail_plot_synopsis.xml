@@ -14,15 +14,13 @@
         android:id="@+id/tv_plot_synopsis_header"
         android:textAppearance="@style/MovieDetailInformationTitles" />
 
-    <ScrollView
+
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/tv_plot_synopsis"
-            android:layout_marginLeft="@dimen/movie_detail_info_indent"
-            android:layout_marginStart="@dimen/movie_detail_info_indent" />
-    </ScrollView>
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_plot_synopsis"
+        android:layout_marginLeft="@dimen/movie_detail_info_indent"
+        android:layout_marginStart="@dimen/movie_detail_info_indent" />
+
 
 </LinearLayout>

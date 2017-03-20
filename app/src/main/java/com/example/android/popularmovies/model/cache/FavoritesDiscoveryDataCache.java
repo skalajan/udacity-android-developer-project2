@@ -1,33 +1,25 @@
-package com.example.android.popularmovies.model;
+package com.example.android.popularmovies.model.cache;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.graphics.Movie;
-import android.os.Bundle;
-import android.support.v4.widget.CursorAdapter;
-import android.view.View;
-import android.view.ViewGroup;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
+import com.example.android.popularmovies.model.remote.discovery.MovieResult;
 
 import java.util.List;
-import java.util.Observable;
-import java.util.Observer;
+
 
 /**
- * Created by kjs566 on 3/11/2017.
+ * DataCache for the favorites items taking the items from the DB.
  */
-
 public class FavoritesDiscoveryDataCache extends DataCache {
     private List<MovieResult> favoriteMovies;
 
+    /**
+     * Constructor of the favorites data cache.
+     */
     public FavoritesDiscoveryDataCache(){
         loadFavoriteMovies();
     }
 
     private void loadFavoriteMovies(){
-        favoriteMovies = MovieResult.fetchFavoriteMoviesCursor();
+        favoriteMovies = MovieResult.fetchFavoriteMovies();
     }
 
     @Override

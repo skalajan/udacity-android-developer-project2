@@ -8,4 +8,7 @@
     <color name="errorBoxColor">#ffbd24</color>
     <color name="posterPlaceholderBackground">#cecece</color>
     <color name="white">#ffffff</color>
+    <color name="movie_detail_item_box_color">#4b4b4b</color>
+    <color name="expandableBackground">#595959</color>
+    <color name="light_grey">#d7d7d7</color>
 </resources>

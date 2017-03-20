@@ -5,4 +5,17 @@
     <dimen name="movie_detail_info_indent">16dp</dimen>
     <dimen name="movie_detail_info_margin_top">16dp</dimen>
     <dimen name="poster_placeholder_text_size">15sp</dimen>
+    <dimen name="movie_detail_info_block_margin_left_right">16dp</dimen>
+    <dimen name="movie_detail_info_block_margin_top">8dp</dimen>
+    <dimen name="movie_detail_item_box_margin_bottom">1dp</dimen>
+    <dimen name="movie_detail_box_header_text_size">15sp</dimen>
+    <dimen name="review_content_text_size">13sp</dimen>
+    <dimen name="review_content_padding">8dp</dimen>
+    <dimen name="movie_detail_box_header_padding">8dp</dimen>
+    <dimen name="networ_error_text_padding_top">10dp</dimen>
+    <dimen name="rating_bar_margin_left">5dp</dimen>
+    <dimen name="movie_detail_header_padding_bottom">8dp</dimen>
+    <dimen name="movie_detail_poster_margin">16dp</dimen>
+    <dimen name="tabs_padding_top">5dp</dimen>
+    <dimen name="tabs_min_height">42dp</dimen>
 </resources>

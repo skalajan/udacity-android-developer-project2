@@ -1,8 +1,9 @@
 package com.example.android.popularmovies.moviedetail;
 
 import android.net.Uri;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -19,7 +20,7 @@ import com.example.android.popularmovies.Constants;
 import com.example.android.popularmovies.PopularMoviesActivity;
 import com.example.android.popularmovies.PopularMoviesApplication;
 import com.example.android.popularmovies.R;
-import com.example.android.popularmovies.model.MovieResult;
+import com.example.android.popularmovies.model.remote.discovery.MovieResult;
 import com.example.android.popularmovies.utilities.CommonUtils;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 import com.google.gson.Gson;
@@ -37,7 +38,7 @@ import butterknife.ButterKnife;
 /**
  * Activity class with clicked movie detail.
  */
-public class MovieDetailActivity extends PopularMoviesActivity {
+public class MovieDetailActivity extends PopularMoviesActivity{
     private static final String TAG = MovieDetailActivity.class.getSimpleName();
 
     protected MovieResult movieDetails;
@@ -87,6 +88,17 @@ public class MovieDetailActivity extends PopularMoviesActivity {
         }else{
             Log.e(TAG, "Json string extra not found");
         }
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        MovieTrailersFragment trailersFragment = MovieTrailersFragment.newInstance(movieDetails.getMovieId());
+        MovieReviewsFragment reviewsFragment = MovieReviewsFragment.newInstance(movieDetails.getMovieId());
+
+        fragmentTransaction.add(R.id.trailers_fragment, trailersFragment);
+        fragmentTransaction.add(R.id.reviews_fragment, reviewsFragment);
+
+        fragmentTransaction.commit();
     }
 
     /**
@@ -171,6 +183,10 @@ public class MovieDetailActivity extends PopularMoviesActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Removes/adds item to the favorites.
+     * @param item Clicked menu item.
+     */
     private void toggleFavorite(MenuItem item){
         if(MovieResult.isInFavorites(movieDetails.getMovieId())){
             MovieResult.removeFromFavorites(movieDetails.getMovieId());

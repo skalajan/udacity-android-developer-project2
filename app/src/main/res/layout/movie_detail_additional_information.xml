@@ -88,8 +88,8 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/tv_rating"
                 android:textAppearance="@style/MovieDetailInformationDescription"
-                android:layout_marginStart="5dp"
-                android:layout_marginLeft="5dp"
+                android:layout_marginStart="@dimen/rating_bar_margin_left"
+                android:layout_marginLeft="@dimen/rating_bar_margin_left"
                 />
         </LinearLayout>
     </LinearLayout>

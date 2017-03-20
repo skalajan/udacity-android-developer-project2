@@ -4,16 +4,15 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 
-import com.example.android.popularmovies.model.DataCache;
-import com.example.android.popularmovies.model.RemoteDiscoveryDataCache;
+import com.example.android.popularmovies.model.cache.DataCache;
+import com.example.android.popularmovies.model.cache.RemoteDiscoveryDataCache;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 
 import org.json.JSONException;
 
 /**
- * Created by kjs566 on 3/10/2017.
+ * Fragment with most popular discovery items.
  */
-
 public class DiscoveryPopularGridFragment extends DiscoveryGridFragment {
     @Override
     DataCache getDataCache() {

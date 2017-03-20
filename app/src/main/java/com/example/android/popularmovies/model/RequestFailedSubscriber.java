@@ -1,9 +1,11 @@
 package com.example.android.popularmovies.model;
 
+import org.greenrobot.eventbus.Subscribe;
+
 /**
  * Interface representing listener to the network request failures.
  */
-public interface RequestFailedListener {
+public interface RequestFailedSubscriber {
     /**
      * Triggered when request timeouts.
      */
@@ -12,7 +14,5 @@ public interface RequestFailedListener {
     /**
      * Triggered when request fails.
      */
-    void onRequestFailed();
+    void onRequestFailed(RequestFailedEvent event);
 }
-
-

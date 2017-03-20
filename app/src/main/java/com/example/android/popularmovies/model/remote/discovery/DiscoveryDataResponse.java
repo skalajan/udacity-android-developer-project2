@@ -1,12 +1,9 @@
-package com.example.android.popularmovies.model;
+package com.example.android.popularmovies.model.remote.discovery;
 
 import com.google.gson.annotations.Expose;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.util.Collection;
 import java.util.List;
 
 
@@ -23,6 +20,9 @@ public class DiscoveryDataResponse {
     @Expose
     private int total_pages;
 
+    public DiscoveryDataResponse(){}
+
+
     /**
      * Gets movie at the specified position in JSON array.
      * @param position Index of the movie in results array.
@@ -36,7 +36,7 @@ public class DiscoveryDataResponse {
      * Gets page of the response
      * @return Page of the response
      */
-    int getPage(){
+    public int getPage(){
         return page;
     }
 
@@ -44,7 +44,7 @@ public class DiscoveryDataResponse {
      * Gets the total number of movies in the list on the server (all pages)
      * @return Total number of movies
      */
-    int getTotalResults() throws JSONException {
+    public int getTotalResults() throws JSONException {
         return total_results;
     }
 
@@ -53,7 +53,7 @@ public class DiscoveryDataResponse {
      * @return Total number of pages
      * @throws JSONException Thrown if not present or not an Integer
      */
-    int getTotalPages() throws JSONException{
+    public int getTotalPages() throws JSONException{
         return total_pages;
     }
 
@@ -61,7 +61,7 @@ public class DiscoveryDataResponse {
      * Lenght of the list of movies in the response.
      * @return Size of returned movies list.
      */
-    int size(){
+    public int size(){
         if(results == null)
             return 0;
         else return results.size();

@@ -10,15 +10,12 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.example.android.popularmovies.R;
-import com.example.android.popularmovies.model.DataCache;
+import com.example.android.popularmovies.model.cache.DataCache;
 import com.example.android.popularmovies.model.DataChangedListener;
-import com.example.android.popularmovies.model.MovieResult;
+import com.example.android.popularmovies.model.remote.discovery.MovieResult;
 import com.example.android.popularmovies.utilities.NetworkUtils;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.Picasso;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Adapter class for Discovery screen. Creates subviews for the Recycler view, loads movie posters and listens for clicking on them.

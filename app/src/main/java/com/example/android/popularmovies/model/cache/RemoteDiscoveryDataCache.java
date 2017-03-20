@@ -1,4 +1,4 @@
-package com.example.android.popularmovies.model;
+package com.example.android.popularmovies.model.cache;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -6,6 +6,11 @@ import android.support.v4.app.LoaderManager;
 import android.util.Log;
 
 import com.example.android.popularmovies.PopularMoviesApplication;
+import com.example.android.popularmovies.model.DataChangedListener;
+import com.example.android.popularmovies.model.loader.DiscoveryDataAsyncLoader;
+import com.example.android.popularmovies.model.remote.discovery.DiscoveryDataResponse;
+import com.example.android.popularmovies.model.remote.discovery.MovieResult;
+import com.example.android.popularmovies.model.RequestFailedListener;
 import com.google.gson.Gson;
 
 import org.json.JSONException;
@@ -13,7 +18,7 @@ import org.json.JSONException;
 import java.util.ArrayList;
 
 /**
- * Class preloading the discovery data when (before) the user hits the end of the recycler view. And changes the requests based on the sorting order.
+ * Class preloading the discovery data when (before) the user hits the end of the recycler view from the network.
  */
 public class RemoteDiscoveryDataCache extends DataCache implements LoaderManager.LoaderCallbacks<DiscoveryDataResponse>{
     private static final String TAG = RemoteDiscoveryDataCache.class.getName();
@@ -243,7 +248,7 @@ public class RemoteDiscoveryDataCache extends DataCache implements LoaderManager
     public void onLoadFinished(android.support.v4.content.Loader<DiscoveryDataResponse> loader, DiscoveryDataResponse data) {
         DiscoveryDataAsyncLoader l = (DiscoveryDataAsyncLoader) loader;
         if(data == null){
-            requestFailedListener.onFail();
+            requestFailedListener.onRequestFailed();
         }else if(sortSuffix.equals(l.getMoviesPathSuffix())){
                 dataReceived(data);
         }

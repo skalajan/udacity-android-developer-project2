@@ -19,7 +19,10 @@ import com.example.android.popularmovies.moviedetail.MovieDetailActivity;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class DiscoveryActivity extends NetworkAccessingActivity implements OnPosterClickedListener, OnFirstLoadingFinishedListener {
+/**
+ * Activity with the discovery movie items.
+ */
+public class DiscoveryActivity extends NetworkAccessingActivity {
     public static final String TAG = DiscoveryActivity.class.getName();
 
     @BindView(R.id.tabs)
@@ -28,6 +31,8 @@ public class DiscoveryActivity extends NetworkAccessingActivity implements OnPos
     protected ViewPager mViewPager;
     @BindView(R.id.toolbar)
     protected Toolbar toolbar;
+
+    ViewPagerAdapter adapter;
 
 
     /**
@@ -45,8 +50,8 @@ public class DiscoveryActivity extends NetworkAccessingActivity implements OnPos
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_discovery_screen);
+        super.onCreate(savedInstanceState);
 
         //Check whether the API KEY is present, else do not further initialize and show toast
         if(Constants.API_KEY == null) {
@@ -58,7 +63,7 @@ public class DiscoveryActivity extends NetworkAccessingActivity implements OnPos
 
         setSupportActionBar(toolbar);
 
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(adapter);
 
         mTabLayout.setupWithViewPager(mViewPager);
@@ -70,71 +75,45 @@ public class DiscoveryActivity extends NetworkAccessingActivity implements OnPos
             }
         }
 
-        mTabLayout.getTabAt(0).setIcon(R.drawable.ic_like);
-        mTabLayout.getTabAt(0).setText(R.string.popular);
-        mTabLayout.getTabAt(1).setIcon(R.drawable.ic_star_border_black_24dp);
-        mTabLayout.getTabAt(1).setText(R.string.top_rated);
-        mTabLayout.getTabAt(2).setIcon(R.drawable.ic_favorite_border_white_24dp);
-        mTabLayout.getTabAt(2).setText(R.string.my_favorites);
 
+        if(mTabLayout.getTabCount() > 2) {
+            TabLayout.Tab tab0 = mTabLayout.getTabAt(0);
+            TabLayout.Tab tab1 = mTabLayout.getTabAt(1);
+            TabLayout.Tab tab2 = mTabLayout.getTabAt(2);
+
+            if(tab0 != null) {
+                tab0.setIcon(R.drawable.ic_like);
+                tab0.setText(R.string.popular);
+            }
+            if(tab1 != null) {
+                tab1.setIcon(R.drawable.ic_star_border_black_24dp);
+                tab1.setText(R.string.top_rated);
+            }
+            if(tab2 != null) {
+                tab2.setIcon(R.drawable.ic_favorite_border_white_24dp);
+                tab2.setText(R.string.my_favorites);
+            }
+        }
     }
 
-    /**
-     * Listens to the poster clicks. Starts new activity and passes movie information to it.
-     * @param position Index of the clicked item.
-     */
-    @Override
-    public void onPosterClicked(int position) {
-        Log.v(TAG, "Poster clicked " + position);
-
-        Intent movieDetailsIntent = new Intent(this, MovieDetailActivity.class);
-        //try {
-            //movieDetailsIntent.putExtra(Constants.MOVIE_DETAILS_EXTRA, discoveryData.getMovieResult(position).toString());
-            startActivity(movieDetailsIntent);
-        /*} catch (JSONException e) {
-            Log.e(TAG, "Error during getting clicked movie data");
-            e.printStackTrace();
-            Toast.makeText(this, "Couldn't get the movie detail data", Toast.LENGTH_SHORT).show();
-        }*/
-    }
-
-    /**
-     * Hides initial progress bar after first data loaded.
-     */
-    @Override
-    public void onAfterFirstLoad() {
-        /*mFirstLoadingProgressBar.setVisibility(View.GONE);
-        mDiscoveryRecyclerView.setVisibility(View.VISIBLE);*/
-    }
-
-    /**
-     * Tries again to load next page.
-     */
     @Override
     protected void tryRequestAgain() {
-        //discoveryData.loadNextPage();
+        for (DiscoveryGridFragment fragment : adapter.getItemsWithoutCreating()) {
+            if(fragment != null){
+                fragment.tryAgain();
+            }
+        }
     }
+
 
     /**
-     * Updates the sorting (titleResIdmenu item title.
-     * @param item Item that should change the title.
+     * Pager adapter fot the TabLayout.
      */
-        protected void updateSortByMenuItemTitle(MenuItem item) {
-        /*int titleResId;
-        if(sortBy == SortBy.POPULARITY)
-            titleResId = R.string.sort_by_ratings;
-        else
-            titleResId = R.string.sort_by_popularity;
-
-        item.setTitle);*/
-    }
+    private class ViewPagerAdapter extends FragmentPagerAdapter {
+        private DiscoveryGridFragment[] mFragments = new DiscoveryGridFragment[3];
 
 
-    class ViewPagerAdapter extends FragmentPagerAdapter {
-        private final Fragment[] mFragments = new Fragment[3];
-
-
-        public ViewPagerAdapter(FragmentManager manager) {
+        ViewPagerAdapter(FragmentManager manager) {
             super(manager);
         }
 
@@ -146,7 +125,20 @@ public class DiscoveryActivity extends NetworkAccessingActivity implements OnPos
             return mFragments[position];
         }
 
-        Fragment createFragment(int position){
+        /**
+         * Gets fragments without creating missing.
+         * @return Discoverz grid fragments
+         */
+        DiscoveryGridFragment[] getItemsWithoutCreating(){
+            return mFragments;
+        }
+
+        /**
+         * Creates fragment at position.
+         * @param position Position of the fragment.
+         * @return Fragment with the discovery items grid.
+         */
+        DiscoveryGridFragment createFragment(int position){
             switch(position){
                 case 0:
                     return new DiscoveryPopularGridFragment();

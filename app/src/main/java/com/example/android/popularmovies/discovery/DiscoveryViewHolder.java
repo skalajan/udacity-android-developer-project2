@@ -28,6 +28,10 @@ class DiscoveryViewHolder extends RecyclerView.ViewHolder implements View.OnClic
         itemView.setOnClickListener(this);
     }
 
+    /**
+     * Sets the poster clicked listener.
+     * @param onPosterClickedListener Listener.
+     */
     void setOnPosterClickedListener(OnPosterClickedListener onPosterClickedListener) {
         this.onPosterClickedListener = onPosterClickedListener;
     }
