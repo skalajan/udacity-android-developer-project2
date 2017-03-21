@@ -220,7 +220,7 @@ public class RemoteDiscoveryDataCache extends DataCache implements LoaderManager
      * Restores the cache from the saved bundle.
      * @param bundle Saved bundle with.
      * @return Restored data cache
-     * @throws JSONException
+     * @throws JSONException Throws when the stored data are not n valid JSON format
      */
     public static RemoteDiscoveryDataCache restoreFromBundle(Bundle bundle, Context context, LoaderManager loaderManager) throws JSONException {
         String sortSuffix = bundle.getString(SAVE_SORT_SUFFIX_IN_BUNDLE_KEY);

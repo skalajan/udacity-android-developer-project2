@@ -106,7 +106,7 @@ public class NetworkUtils {
      * Creates URL to movie detail informations.
      * @param movieId Id of the movie
      * @param pathSuffix Suffix to the url - videos/reviews/...
-     * @return
+     * @return URL to the movie detail
      */
     public static URL buildMovieDetailUrl(long movieId, String pathSuffix) {
         Uri builtUri = createMovieUriBuilder()
@@ -129,7 +129,7 @@ public class NetworkUtils {
      * Makes API call and reads and parses response.
      * @param url Url of the API.
      * @return Parsed response.
-     * @throws IOException
+     * @throws IOException Exception when reading response fails.
      */
     public static String getResponseFromHttpUrl(URL url) throws IOException {
         Log.d(TAG, "Request: " + url.toString());

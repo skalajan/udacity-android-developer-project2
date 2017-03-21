@@ -3,9 +3,8 @@ package com.example.android.popularmovies.model.remote.review;
 import com.google.gson.annotations.Expose;
 
 /**
- * Created by kjs566 on 19.3.2017.
+ * Review result class representing review downloaded fro, server.
  */
-
 public class ReviewResult {
     @Expose
     private String id;
@@ -18,6 +17,7 @@ public class ReviewResult {
 
     @Expose
     private String url;
+
 
     public String getId() {
         return id;

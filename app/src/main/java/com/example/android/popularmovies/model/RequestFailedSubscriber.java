@@ -1,7 +1,5 @@
 package com.example.android.popularmovies.model;
 
-import org.greenrobot.eventbus.Subscribe;
-
 /**
  * Interface representing listener to the network request failures.
  */

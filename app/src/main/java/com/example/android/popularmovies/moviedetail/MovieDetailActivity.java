@@ -173,7 +173,7 @@ public class MovieDetailActivity extends PopularMoviesActivity{
     /**
      * Listens to click on sorting button.
      * @param item Clicked menu item
-     * @return
+     * @return True if the delegation end here
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

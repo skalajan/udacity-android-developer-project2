@@ -1,15 +1,11 @@
 <resources>
     <string name="app_name" translatable="false">Popular Movies</string>
 
-    <string name="sort_by">Sort by</string>
-    <string name="sort_by_popularity">Sort by popularity</string>
-    <string name="sort_by_ratings">Sort by ratings</string>
     <string name="network_request_failed_message">Network request failed</string>
     <string name="try_again">Try again</string>
     <string name="check_connectivity">Please check your connectivity</string>
     <string name="plot_synopsis">Plot synopsis:</string>
     <string name="original_title">Original title:</string>
-    <string name="original_language">Original language:</string>
     <string name="release_date">Release date:</string>
     <string name="average_rating">Average rating:</string>
     <string name="poster_content_description">Poster of the movie</string>
@@ -22,7 +18,7 @@
     <string name="add_to_favorites">Add to favorites</string>
     <string name="movie_reviews">Reviews</string>
     <string name="authors_review">%1$s\'s review</string>
-    <string name="play">Play</string>
     <string name="play_trailer">Play trailer</string>
     <string name="expand_colapse_review">Expand or collapse review</string>
+    <string name="sorting_icon_description">Icon of the sorting</string>
 </resources>

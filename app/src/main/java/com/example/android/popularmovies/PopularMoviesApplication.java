@@ -6,10 +6,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 /**
- * Created by kjs566 on 3/11/2017.
- */
-
-/**
  * Application class initializing ActiveAndroid.
  */
 public class PopularMoviesApplication extends Application {

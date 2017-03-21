@@ -1,6 +1,5 @@
 package com.example.android.popularmovies.discovery;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -9,12 +8,10 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.android.popularmovies.Constants;
 import com.example.android.popularmovies.R;
-import com.example.android.popularmovies.moviedetail.MovieDetailActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
