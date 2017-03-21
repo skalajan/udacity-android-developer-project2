@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.android.popularmovies.moviedetail.MovieDetailActivity"
+    android:background="@color/detailBackground"
+    >
+
+
+    <include android:id="@+id/app_bar_layout" layout="@layout/app_bar_layout"
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+     />
+
+    <include
+        android:id="@+id/movie_poster"
+        android:layout_width="@dimen/movie_detail_poster_land_width"
+        android:layout_height="0dp"
+        android:layout_margin="@dimen/movie_detail_poster_margin"
+        layout="@layout/movie_detail_poster"
+        app:layout_constraintTop_toBottomOf="@id/app_bar_layout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        />
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/app_bar_layout"
+        app:layout_constraintLeft_toRightOf="@id/movie_poster"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+    >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="@dimen/movie_detail_information_margin_top">
+
+            <LinearLayout
+                android:id="@+id/ll_top_part"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false">
+
+
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    >
+                    <include
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        layout="@layout/movie_detail_additional_information"
+                        />
+
+                    <include
+                        layout="@layout/movie_detail_plot_synopsis"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginRight="@dimen/movie_detail_info_block_margin_left_right"
+                        android:layout_marginEnd="@dimen/movie_detail_info_block_margin_left_right"
+                        android:layout_marginTop="@dimen/movie_detail_info_margin_top" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <FrameLayout
+                    android:id="@+id/reviews_fragment"
+                    android:layout_marginTop="@dimen/movie_detail_info_margin_top"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+
+                <FrameLayout
+                    android:id="@+id/trailers_fragment"
+                    android:layout_marginTop="@dimen/movie_detail_info_margin_top"
+                    android:layout_marginLeft="@dimen/movie_detail_info_block_margin_left_right"
+                    android:layout_marginRight="@dimen/movie_detail_info_block_margin_left_right"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+</android.support.constraint.ConstraintLayout>

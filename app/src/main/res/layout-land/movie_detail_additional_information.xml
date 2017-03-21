@@ -26,7 +26,6 @@
             android:layout_marginStart="@dimen/movie_detail_info_indent"
             android:layout_marginLeft="@dimen/movie_detail_info_indent" />
     </LinearLayout>
-
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="wrap_content"
