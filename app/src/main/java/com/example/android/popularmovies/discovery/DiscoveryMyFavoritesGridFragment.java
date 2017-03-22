@@ -19,11 +19,11 @@ public class DiscoveryMyFavoritesGridFragment extends DiscoveryGridFragment {
 
     @Override
     DataCache getDataCache() {
-        return new FavoritesDiscoveryDataCache();
+        return new FavoritesDiscoveryDataCache(getContext(), getLoaderManager());
     }
 
     @Override
     DataCache restoreDataCacheFromBundle(Bundle bundle, Context context, LoaderManager loaderManager) {
-        return new FavoritesDiscoveryDataCache();
+        return new FavoritesDiscoveryDataCache(context, loaderManager);
     }
 }

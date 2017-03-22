@@ -75,6 +75,13 @@ public class MovieDetailLoader<T> extends AsyncTaskLoader<T> {
         return result;
     }
 
+    @Override
+    public void deliverResult(T data) {
+        super.deliverResult(data);
+
+        this.response = data;
+    }
+
     /**
      * Gets id of the loading movie.
      * @return Id of movie

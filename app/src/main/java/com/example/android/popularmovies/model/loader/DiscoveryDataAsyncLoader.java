@@ -21,7 +21,7 @@ public class DiscoveryDataAsyncLoader extends AsyncTaskLoader<DiscoveryDataRespo
     private final int pageToLoad;
     private final String moviesPathSuffix;
 
-    DiscoveryDataResponse response;
+    private DiscoveryDataResponse mResponse;
 
     /**
      * @param context Context of the loader
@@ -37,8 +37,8 @@ public class DiscoveryDataAsyncLoader extends AsyncTaskLoader<DiscoveryDataRespo
     protected void onStartLoading() {
         super.onStartLoading();
 
-        if(response != null){
-            deliverResult(response);
+        if(mResponse != null){
+            deliverResult(mResponse);
         }else{
             forceLoad();
         }
@@ -68,6 +68,13 @@ public class DiscoveryDataAsyncLoader extends AsyncTaskLoader<DiscoveryDataRespo
         }
 
         return result;
+    }
+
+    @Override
+    public void deliverResult(DiscoveryDataResponse data) {
+        super.deliverResult(data);
+
+        this.mResponse = data;
     }
 
     /**

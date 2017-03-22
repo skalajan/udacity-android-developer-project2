@@ -1,44 +1,55 @@
 package com.example.android.popularmovies.model.remote.discovery;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
-import com.activeandroid.query.Delete;
-import com.activeandroid.query.Select;
-import com.example.android.popularmovies.Constants;
+import com.example.android.popularmovies.model.database.PopularMoviesContract;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import java.util.List;
 
 /**
  * Class representing one result of the response for the list of movies. Also capable of storing into the favorites database.
  */
-@Table(name = Constants.FAVORITES_TABLE_NAME)
+@Table(name = PopularMoviesContract.FAVORITES_TABLE_NAME)
 public class MovieResult extends Model {
+
     @Expose
     @SerializedName("id")
-    @Column
+    @Column(name = PopularMoviesContract.FavoriteMovieEntry.MOVIE_ID_COLUMN)
     private long movieId;
 
     @Expose
-    @Column
-    private String poster_path;
+    @SerializedName("poster_path")
+    @Column(name = PopularMoviesContract.FavoriteMovieEntry.POSTER_PATH_COLUMN)
+    private String posterPath;
+
     @Expose
-    @Column
+    @SerializedName("title")
+    @Column(name = PopularMoviesContract.FavoriteMovieEntry.TITLE_COLUMN)
     private String title;
+
     @Expose
-    @Column
-    private String vote_average;
+    @SerializedName("vote_average")
+    @Column(name = PopularMoviesContract.FavoriteMovieEntry.VOTE_AVERAGE_COLUMN)
+    private String voteAverage;
+
     @Expose
-    @Column
+    @SerializedName("overview")
+    @Column(name = PopularMoviesContract.FavoriteMovieEntry.OVERVIEW_COLUMN)
     private String overview;
+
     @Expose
-    @Column
-    private String release_date;
+    @SerializedName("release_date")
+    @Column(name = PopularMoviesContract.FavoriteMovieEntry.RELEASE_DATE_COLUMN)
+    private String releaseDate;
+
     @Expose
-    @Column
-    private String original_title;
+    @SerializedName("original_title")
+    @Column(name = PopularMoviesContract.FavoriteMovieEntry.ORIGINAL_TITLE_COLUMN)
+    private String originalTitle;
 
     /**
      * Public empty constructor.
@@ -58,7 +69,7 @@ public class MovieResult extends Model {
      * @return Path to the poster
      */
     public String getPosterPath() {
-        return poster_path;
+        return posterPath;
     }
 
     /**
@@ -74,7 +85,7 @@ public class MovieResult extends Model {
      * @return Avarage voting
      */
     public String getVoteAverage() {
-        return vote_average;
+        return voteAverage;
     }
 
     /**
@@ -90,7 +101,7 @@ public class MovieResult extends Model {
      * @return Release date
      */
     public String getReleaseDate() {
-        return release_date;
+        return releaseDate;
     }
 
     /**
@@ -98,47 +109,47 @@ public class MovieResult extends Model {
      * @return Original title
      */
     public String getOriginalTitle() {
-        return original_title;
+        return originalTitle;
     }
 
-    /**
-     * Fetches the favorite movies from the DB.
-     * @return List of favorite movies
-     */
-    public static List<MovieResult> fetchFavoriteMovies(){
-        return new Select().from(MovieResult.class).execute();
+    public static MovieResult populateFromCursor(Cursor b) {
+        MovieResult mr = new MovieResult();
+        int movieIdCol = b.getColumnIndex(PopularMoviesContract.FavoriteMovieEntry.MOVIE_ID_COLUMN);
+        int posterPathCol = b.getColumnIndex(PopularMoviesContract.FavoriteMovieEntry.POSTER_PATH_COLUMN);
+        int titleCol = b.getColumnIndex(PopularMoviesContract.FavoriteMovieEntry.TITLE_COLUMN);
+        int voteCol = b.getColumnIndex(PopularMoviesContract.FavoriteMovieEntry.VOTE_AVERAGE_COLUMN);
+        int overviewCol = b.getColumnIndex(PopularMoviesContract.FavoriteMovieEntry.OVERVIEW_COLUMN);
+        int releaseCol = b.getColumnIndex(PopularMoviesContract.FavoriteMovieEntry.RELEASE_DATE_COLUMN);
+        int originalCol = b.getColumnIndex(PopularMoviesContract.FavoriteMovieEntry.ORIGINAL_TITLE_COLUMN);
+
+        if(movieIdCol != -1)
+            mr.movieId = b.getLong(movieIdCol);
+        if(posterPathCol != -1)
+            mr.posterPath = b.getString(posterPathCol);
+        if(titleCol != -1)
+            mr.title = b.getString(titleCol);
+        if(voteCol != -1)
+            mr.voteAverage = b.getString(voteCol);
+        if(overviewCol != -1)
+            mr.overview = b.getString(overviewCol);
+        if(releaseCol != -1)
+            mr.releaseDate = b.getString(releaseCol);
+        if(originalCol != -1)
+            mr.originalTitle = b.getString(originalCol);
+
+        return mr;
     }
 
-    /**
-     * Checks whether the movie with id is in favorites DB.
-     * @param movieId Id of the movie
-     * @return Whether the movie is in favorites
-     */
-    public static boolean isInFavorites(long movieId){
-        return new Select().from(MovieResult.class).where("movieId = " + movieId).exists();
-    }
+    public ContentValues toContentValues(){
+        ContentValues values = new ContentValues();
+        values.put(PopularMoviesContract.FavoriteMovieEntry.MOVIE_ID_COLUMN, getMovieId());
+        values.put(PopularMoviesContract.FavoriteMovieEntry.ORIGINAL_TITLE_COLUMN, getOriginalTitle());
+        values.put(PopularMoviesContract.FavoriteMovieEntry.OVERVIEW_COLUMN, getOverview());
+        values.put(PopularMoviesContract.FavoriteMovieEntry.POSTER_PATH_COLUMN, getPosterPath());
+        values.put(PopularMoviesContract.FavoriteMovieEntry.RELEASE_DATE_COLUMN, getReleaseDate());
+        values.put(PopularMoviesContract.FavoriteMovieEntry.VOTE_AVERAGE_COLUMN, getVoteAverage());
+        values.put(PopularMoviesContract.FavoriteMovieEntry.TITLE_COLUMN, getTitle());
 
-    /**
-     * Counts the favorite movies in DB.
-     * @return count
-     */
-    public static int countFavoriteMovies(){
-        return new Select().from(MovieResult.class).count();
-    }
-
-    /**
-     * Adds the movie to the favorites.
-     * @param result Movie result that should be added.
-     */
-    public static void addToFavorites(MovieResult result){
-        result.save();
-    }
-
-    /**
-     * Remove movie with selected id from the DB.
-     * @param movieId Id of the movie to be deleted.
-     */
-    public static void removeFromFavorites(long movieId) {
-        new Delete().from(MovieResult.class).where("movieId = " + movieId).execute();
+        return values;
     }
 }

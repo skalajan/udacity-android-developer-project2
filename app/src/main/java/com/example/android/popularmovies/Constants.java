@@ -13,7 +13,6 @@ public class Constants {
 
 
     public static final String MOVIE_DETAILS_EXTRA = "movieDetailsExtra";
-    public static final String FAVORITES_TABLE_NAME = "FavoriteMoviesTable";
 
     public static final int TRAILERS_LOADER_ID = 222;
     public static final int REVIEWS_LOADER_ID = 223;

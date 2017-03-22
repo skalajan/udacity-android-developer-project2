@@ -1,6 +1,9 @@
 package com.example.android.popularmovies.moviedetail;
 
+import android.content.ContentResolver;
+import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
@@ -20,6 +23,7 @@ import com.example.android.popularmovies.Constants;
 import com.example.android.popularmovies.PopularMoviesActivity;
 import com.example.android.popularmovies.PopularMoviesApplication;
 import com.example.android.popularmovies.R;
+import com.example.android.popularmovies.model.database.PopularMoviesContract;
 import com.example.android.popularmovies.model.remote.discovery.MovieResult;
 import com.example.android.popularmovies.utilities.CommonUtils;
 import com.example.android.popularmovies.utilities.NetworkUtils;
@@ -164,9 +168,7 @@ public class MovieDetailActivity extends PopularMoviesActivity{
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.movie_detail, menu);
 
-        if(MovieResult.isInFavorites(movieDetails.getMovieId())){
-            menu.findItem(R.id.favorite_menu_item).setIcon(R.drawable.ic_favorite_white_24dp);
-        }
+        new UpdateFavoriteStatusAsyncTask(menu.findItem(R.id.favorite_menu_item), false).execute(this.movieDetails);
         return true;
     }
 
@@ -188,13 +190,7 @@ public class MovieDetailActivity extends PopularMoviesActivity{
      * @param item Clicked menu item.
      */
     private void toggleFavorite(MenuItem item){
-        if(MovieResult.isInFavorites(movieDetails.getMovieId())){
-            MovieResult.removeFromFavorites(movieDetails.getMovieId());
-            item.setIcon(R.drawable.ic_favorite_border_white_24dp);
-        }else{
-            MovieResult.addToFavorites(this.movieDetails);
-            item.setIcon(R.drawable.ic_favorite_white_24dp);
-        }
+        new UpdateFavoriteStatusAsyncTask(item, true).execute(this.movieDetails);
     }
 
     /**
@@ -223,6 +219,57 @@ public class MovieDetailActivity extends PopularMoviesActivity{
                     });
         }else{
             Log.d(TAG, "Null image url");
+        }
+    }
+
+    private class UpdateFavoriteStatusAsyncTask extends AsyncTask<MovieResult, Void, Boolean>{
+        private final MenuItem item;
+        private final boolean performDbChange;
+
+        UpdateFavoriteStatusAsyncTask(MenuItem item, boolean performDbChange){
+            this.item = item;
+            this.performDbChange = performDbChange;
+        }
+
+        @Override
+        protected Boolean doInBackground(MovieResult... params) {
+            if(params.length == 1) {
+                MovieResult movieDetails = params[0];
+                ContentResolver contentResolver = getContentResolver();
+
+                Cursor movieInDb = contentResolver.query(PopularMoviesContract.FavoriteMovieEntry.createContentUriByMovieId(Long.toString(movieDetails.getMovieId())), null, null, null, null);
+                boolean isInFavorites = false;
+                if(movieInDb != null) {
+                    if (movieInDb.getCount() > 0) {
+                        isInFavorites = true;
+                    }
+                    movieInDb.close();
+                }
+
+                if(performDbChange) {
+                    if (isInFavorites) {
+                        contentResolver.delete(PopularMoviesContract.FavoriteMovieEntry.createContentUriByMovieId(Long.toString(movieDetails.getMovieId())), null, null);
+                    } else {
+                        contentResolver.insert(PopularMoviesContract.FavoriteMovieEntry.CONTENT_URI, movieDetails.toContentValues());
+                    }
+                    return !isInFavorites;
+                }
+                return isInFavorites;
+            }else{
+                Log.e(TAG, "Wrong number of parameters");
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean isInFavorites) {
+            if(isInFavorites != null){
+                   if(isInFavorites)
+                        item.setIcon(R.drawable.ic_favorite_white_24dp);
+                   else
+                        item.setIcon(R.drawable.ic_favorite_border_white_24dp);
+            }
         }
     }
 }
